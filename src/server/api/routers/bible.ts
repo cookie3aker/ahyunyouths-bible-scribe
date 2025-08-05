@@ -10,7 +10,7 @@ import { bibleBook } from "~/server/db/schema";
 export const bibleRouter = createTRPCRouter({
   getBooks: publicProcedure.query(async ({ ctx }) => {
     const books = await ctx.db.query.bibleBook.findMany({
-      orderBy: (bibleBook, { asc }) => [asc(bibleBook.book_name)],
+      orderBy: (bibleBook, { asc }) => [asc(bibleBook.book_order)],
     });
     return books;
   }),
