@@ -14,4 +14,4 @@ export const bibleRouter = createTRPCRouter({
     });
     return books;
   }),
-})
+});

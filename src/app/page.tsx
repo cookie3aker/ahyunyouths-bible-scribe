@@ -14,12 +14,13 @@ export default async function Home() {
         <div>너의 소그룹을 선택해줘!</div>
         <div className="grid grid-cols-3 gap-4">
           {groups.map((it) => (
-            <div
+            <a
               key={it.group_id}
-              className="rounded border p-4 text-center text-lg"
+              className="cursor-pointer rounded border p-4 text-center text-lg"
+              href={`/scribe?group_id=${it.group_id}`}
             >
               {it.group_name}
-            </div>
+            </a>
           ))}
         </div>
       </div>
