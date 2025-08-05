@@ -143,3 +143,11 @@ export const bibleVerse = createTable(
     index("bible_verse_chap_verse_idx").on(t.chapter_id, t.verse_number),
   ]
 );
+
+export const group = createTable(
+  "group",
+  (d) => ({
+    group_id: d.serial().primaryKey().notNull(),
+    group_name: d.text().notNull().unique(),
+  })
+);
