@@ -4,9 +4,9 @@ import { notFound } from "next/navigation";
 export default async function ScribePage({
   searchParams,
 }: {
-  searchParams?: { group_id?: string };
+  searchParams?: Promise<{ group_id?: string }>;
 }) {
-  const groupId = searchParams?.group_id;
+  const groupId = (await searchParams)?.group_id;
   if (!groupId) {
     notFound();
   }
