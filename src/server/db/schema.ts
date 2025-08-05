@@ -108,3 +108,37 @@ export const verificationTokens = createTable(
   }),
   (t) => [primaryKey({ columns: [t.identifier, t.token] })],
 );
+
+export const bibleBook = createTable(
+  "bible_book",
+  (d) => ({
+    book_id: d.serial().primaryKey().notNull(),
+    book_name: d.text().notNull().unique(),
+    testament: d.text().notNull(),
+  })
+);
+
+export const bibleChapter = createTable(
+  "bible_chapter",
+  (d) => ({
+    chapter_id: d.serial().primaryKey().notNull(),
+    book_id: d.integer().notNull().references(() => bibleBook.book_id),
+    chapter_number: d.integer().notNull(),
+  }),
+  (t) => [
+    index("bible_chapter_book_chap_idx").on(t.book_id, t.chapter_number),
+  ]
+);
+
+export const bibleVerse = createTable(
+  "bible_verse",
+  (d) => ({
+    verse_id: d.serial().primaryKey().notNull(),
+    chapter_id: d.integer().notNull().references(() => bibleChapter.chapter_id),
+    verse_number: d.integer().notNull(),
+    verse_text: d.text().notNull(),
+  }),
+  (t) => [
+    index("bible_verse_chap_verse_idx").on(t.chapter_id, t.verse_number),
+  ]
+);
