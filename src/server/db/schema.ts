@@ -114,6 +114,7 @@ export const bibleBook = createTable(
   (d) => ({
     book_id: d.serial().primaryKey().notNull(),
     book_name: d.text().notNull().unique(),
+    book_order: d.integer().notNull().default(0),
     testament: d.text().notNull(),
   })
 );
