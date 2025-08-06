@@ -1,5 +1,6 @@
 import { api, HydrateClient } from "~/trpc/server";
 import { notFound } from "next/navigation";
+import { Typing } from "./_components/typing";
 
 export default async function ScribePage({
   searchParams,
@@ -31,7 +32,7 @@ export default async function ScribePage({
         {verse?.book?.book_name} {verse?.chapter.chapter_number}장{" "}
         {verse?.verse.verse_number}절
       </div>
-      <div className="m-4">{verse?.verse.verse_text}</div>
+      <Typing targetText={verse?.verse.verse_text ?? ""} />
     </HydrateClient>
   );
 }
