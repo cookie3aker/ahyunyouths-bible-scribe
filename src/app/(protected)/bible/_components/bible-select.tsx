@@ -57,7 +57,7 @@ export function BibleSelect() {
           ? Array.from({ length: versesCount }, (_, index) => (
               <a
                 key={index}
-                href={`/scribe?book_id=${selectedBookId}&chapter_id=${selectedChapterId}&verse=${index + 1}`}
+                href={`/scribe?book_id=${selectedBookId}&chapter_id=${selectedChapterId}&verse_number=${index + 1}`}
                 className="block rounded border p-2 text-center"
               >
                 {index + 1}절

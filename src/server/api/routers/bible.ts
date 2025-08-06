@@ -6,6 +6,8 @@ import {
   bibleBook,
   bookChapterCount,
   chapterVerseCount,
+  bibleChapter,
+  bibleVerse,
 } from "~/server/db/schema";
 
 export const bibleRouter = createTRPCRouter({
@@ -48,4 +50,46 @@ export const bibleRouter = createTRPCRouter({
 
     return booksWithChapters;
   }),
+
+  // book_id, chapter_number, verse_number로 특정 성경 구절 조회 (bibleBook, bibleChapter 조인)
+  getVerse: publicProcedure
+    .input(
+      z.object({
+        book_id: z.number(),
+        chapter_id: z.number(),
+        verse_number: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      // 1. 해당 book/chapter 찾기
+      const chapter = await ctx.db.query.bibleChapter.findFirst({
+        where: (bc, { eq, and }) =>
+          and(
+            eq(bc.book_id, input.book_id),
+            eq(bc.chapter_id, input.chapter_id),
+          ),
+      });
+      if (!chapter) return null;
+
+      // 2. 해당 verse 찾기
+      const verse = await ctx.db.query.bibleVerse.findFirst({
+        where: (bv, { eq, and }) =>
+          and(
+            eq(bv.chapter_id, chapter.chapter_id),
+            eq(bv.verse_number, input.verse_number),
+          ),
+      });
+      if (!verse) return null;
+
+      // 3. book 정보
+      const book = await ctx.db.query.bibleBook.findFirst({
+        where: (bb, { eq }) => eq(bb.book_id, input.book_id),
+      });
+
+      return {
+        book,
+        chapter,
+        verse,
+      };
+    }),
 });
