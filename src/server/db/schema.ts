@@ -1,5 +1,5 @@
 import { relations, sql } from "drizzle-orm";
-import { index, pgTableCreator, primaryKey } from "drizzle-orm/pg-core";
+import { index, pgTableCreator, primaryKey, pgMaterializedView } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
 
 /**
@@ -150,4 +150,33 @@ export const group = createTable(
     group_id: d.serial().primaryKey().notNull(),
     group_name: d.text().notNull().unique(),
   })
+);
+
+// Materialized View: Book별 Chapter 수를 계산
+export const bookChapterCount = pgMaterializedView("book_chapter_count").as((qb) =>
+  qb
+    .select({
+      book_id: bibleBook.book_id,
+      book_name: bibleBook.book_name,
+      book_order: bibleBook.book_order,
+      testament: bibleBook.testament,
+      chapter_count: sql<number>`COUNT(${bibleChapter.chapter_id})`.as("chapter_count"),
+    })
+    .from(bibleBook)
+    .leftJoin(bibleChapter, sql`${bibleBook.book_id} = ${bibleChapter.book_id}`)
+    .groupBy(bibleBook.book_id, bibleBook.book_name)
+);
+
+// Materialized View: Chapter별 Verse 수를 계산
+export const chapterVerseCount = pgMaterializedView("chapter_verse_count").as((qb) =>
+  qb
+    .select({
+      chapter_id: bibleChapter.chapter_id,
+      book_id: bibleChapter.book_id,
+      chapter_number: bibleChapter.chapter_number,
+      verse_count: sql<number>`COUNT(${bibleVerse.verse_id})`.as("verse_count"),
+    })
+    .from(bibleChapter)
+    .leftJoin(bibleVerse, sql`${bibleChapter.chapter_id} = ${bibleVerse.chapter_id}`)
+    .groupBy(bibleChapter.chapter_id, bibleChapter.book_id, bibleChapter.chapter_number)
 );
