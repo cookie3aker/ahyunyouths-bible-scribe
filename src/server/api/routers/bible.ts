@@ -1,14 +1,11 @@
 import { z } from "zod";
 import { eq } from "drizzle-orm";
 
-import {
-  createTRPCRouter,
-  publicProcedure,
-} from "~/server/api/trpc";
+import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import {
   bibleBook,
   bookChapterCount,
-  chapterVerseCount
+  chapterVerseCount,
 } from "~/server/db/schema";
 
 export const bibleRouter = createTRPCRouter({
@@ -34,7 +31,9 @@ export const bibleRouter = createTRPCRouter({
       .orderBy(chapterVerseCount.book_id, chapterVerseCount.chapter_number);
 
     // book_id별로 챕터별 벌스수 그룹핑
-    const chaptersByBookId: Record<string, typeof allChaptersWithVerseCount> = {};
+    const chaptersByBookId: Record<string, typeof allChaptersWithVerseCount> =
+      {};
+
     for (const chapter of allChaptersWithVerseCount) {
       const bookId = chapter.book_id;
       chaptersByBookId[bookId] ??= [];
@@ -42,13 +41,11 @@ export const bibleRouter = createTRPCRouter({
     }
 
     // 각 book에 chaptersWithVerseCount 추가
-    const booksWithChapters = booksWithChapterCount.map(book => ({
+    const booksWithChapters = booksWithChapterCount.map((book) => ({
       ...book,
       chaptersWithVerseCount: chaptersByBookId[book.book_id] ?? [],
     }));
 
-    return {
-      booksWithChapters,
-    };
+    return booksWithChapters;
   }),
 });

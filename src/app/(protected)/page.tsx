@@ -17,7 +17,7 @@ export default async function Home() {
             <a
               key={it.group_id}
               className="cursor-pointer rounded border p-4 text-center text-lg"
-              href={`/scribe?group_id=${it.group_id}`}
+              href={`/bible?group_id=${it.group_id}`}
             >
               {it.group_name}
             </a>

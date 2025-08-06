@@ -1,7 +1,8 @@
 import { api, HydrateClient } from "~/trpc/server";
 import { notFound } from "next/navigation";
+import { BibleSelect } from "./_components/bible-select";
 
-export default async function ScribePage({
+export default async function BiblePage({
   searchParams,
 }: {
   searchParams?: Promise<{ group_id?: string }>;
@@ -14,7 +15,7 @@ export default async function ScribePage({
   const groups = await api.group.getGroups();
   const group = groups.find((g) => g.group_id === Number(groupId));
 
-  const books = await api.bible.getBooks();
+  void api.bible.getBibleStatistics.prefetch();
 
   return (
     <HydrateClient>
@@ -23,15 +24,10 @@ export default async function ScribePage({
         <br />
         오늘의 필사도 화이팅!
       </div>
+
       <div>필사 할 성경을 선택해줘</div>
 
-      <select className="mb-4">
-        {books.map((book) => (
-          <option key={book.book_id} value={book.book_id}>
-            {book.book_name}
-          </option>
-        ))}
-      </select>
+      <BibleSelect />
     </HydrateClient>
   );
 }
