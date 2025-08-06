@@ -33,16 +33,10 @@ export function Typing({ targetText }: TypingProps) {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-
     // 샘플 텍스트 길이를 초과하지 않도록 제한
     if (value.length <= targetText.length) {
-      // 입력 길이가 현재보다 작아지는 경우(백스페이스)만 허용
-      // 또는 입력 길이가 현재 위치와 같거나 1 증가하는 경우만 허용
-      if (value.length <= currentInput.length + 1) {
-        setCurrentInput(value);
-        // 조합 중일 때도 항상 입력 길이에 따라 커서 위치 업데이트
-        setCurrentPosition(value.length);
-      }
+      setCurrentInput(value);
+      setCurrentPosition(value.length);
     }
   };
 
@@ -58,7 +52,10 @@ export function Typing({ targetText }: TypingProps) {
     e: React.CompositionEvent<HTMLInputElement>,
   ) => {
     setIsComposing(false);
-    // 이미 handleInputChange에서 업데이트되므로 제거
+    // 모바일 환경 대응: 조합이 끝난 후 실제 입력값을 동기화
+    const value = e.currentTarget.value;
+    setCurrentInput(value);
+    setCurrentPosition(value.length);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
