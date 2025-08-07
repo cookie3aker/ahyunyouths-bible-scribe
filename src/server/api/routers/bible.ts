@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { eq } from "drizzle-orm";
 
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import {
   bibleBook,
   bookChapterCount,
@@ -11,7 +11,7 @@ import {
 } from "~/server/db/schema";
 
 export const bibleRouter = createTRPCRouter({
-  getBooks: publicProcedure.query(async ({ ctx }) => {
+  getBooks: protectedProcedure.query(async ({ ctx }) => {
     const books = await ctx.db.query.bibleBook.findMany({
       orderBy: (bibleBook, { asc }) => [asc(bibleBook.book_order)],
     });
@@ -19,7 +19,7 @@ export const bibleRouter = createTRPCRouter({
   }),
 
   // 모든 성경 통계 데이터를 한번에 조회 (도서별 챕터수 + 챕터별 벌스수)
-  getBibleStatistics: publicProcedure.query(async ({ ctx }) => {
+  getBibleStatistics: protectedProcedure.query(async ({ ctx }) => {
     // 도서별 총 챕터수 조회
     const booksWithChapterCount = await ctx.db
       .select()
@@ -52,7 +52,7 @@ export const bibleRouter = createTRPCRouter({
   }),
 
   // book_id, chapter_number, verse_number로 특정 성경 구절 조회 (bibleBook, bibleChapter 조인)
-  getVerse: publicProcedure
+  getVerse: protectedProcedure
     .input(
       z.object({
         book_id: z.number(),
