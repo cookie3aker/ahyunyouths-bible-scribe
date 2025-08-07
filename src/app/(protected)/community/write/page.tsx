@@ -1,9 +1,22 @@
-export default function WritePage() {
-  // 간단한 post 작성 페이지 (모바일 레이아웃)
+import { api } from "~/trpc/server";
+import { redirect } from "next/navigation";
+
+export default async function WritePage() {
+  // onSubmit handler for the form
+  const createPost = async (formData: FormData) => {
+    "use server";
+
+    await api.post.create({
+      content: formData.get("content") as string,
+    });
+
+    redirect("/community");
+  };
+
   return (
     <div className="container flex flex-col items-center justify-center gap-12">
       <h2>글쓰기</h2>
-      <form className="w-full max-w-md">
+      <form className="w-full max-w-md" action={createPost}>
         <div className="mb-4">
           <label
             htmlFor="content"
