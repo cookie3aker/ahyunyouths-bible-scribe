@@ -1,11 +1,14 @@
 import { api, HydrateClient } from "~/trpc/server";
+import { SetProfileModal } from "../_components/set-profile-modal";
+import { auth } from "~/server/auth";
 
 export default async function Home() {
+  const session = await auth();
   const groups = await api.group.getGroups();
 
   return (
     <HydrateClient>
-      <div className="container flex flex-col items-center justify-center gap-12">
+      <div className="relative container flex flex-col items-center justify-center gap-12">
         <div>
           필사를 통해
           <br />
@@ -23,6 +26,13 @@ export default async function Home() {
             </a>
           ))}
         </div>
+
+        {!session?.user.groupId && (
+          <SetProfileModal
+            name={session?.user.name ?? ""}
+            email={session?.user.email ?? ""}
+          />
+        )}
       </div>
     </HydrateClient>
   );

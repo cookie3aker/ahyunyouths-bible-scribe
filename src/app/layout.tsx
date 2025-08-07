@@ -23,7 +23,7 @@ export default async function RootLayout({
     <html lang="en" className={`${geist.variable}`}>
       <body>
         <TRPCReactProvider>
-          <div className="mx-auto min-h-screen max-w-[768px] bg-[#F5F1EE] px-4 py-8">
+          <div className="mx-auto min-h-screen max-w-[768px] bg-[#F5F1EE]">
             {children}
           </div>
         </TRPCReactProvider>

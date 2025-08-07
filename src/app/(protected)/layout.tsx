@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { BottomNavigation } from "../_components/bottom-navigation";
+import { Header } from "../_components/header";
 
 export const metadata: Metadata = {};
 
@@ -10,7 +11,8 @@ export default function RootLayout({
 }>) {
   return (
     <>
-      {children}
+      <Header />
+      <main className="p-4">{children}</main>
       <BottomNavigation />
     </>
   );
