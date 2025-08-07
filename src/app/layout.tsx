@@ -8,7 +8,7 @@ import { TRPCReactProvider } from "~/trpc/react";
 export const metadata: Metadata = {
   title: "아현젊은이교회 성경필사",
   description: "아현젊은이교회 성경필사",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  icons: [{ rel: "icon", url: "/favicon.png" }],
 };
 
 const geist = Geist({
