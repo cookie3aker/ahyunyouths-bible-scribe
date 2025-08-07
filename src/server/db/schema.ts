@@ -1,5 +1,10 @@
 import { relations, sql } from "drizzle-orm";
-import { index, pgTableCreator, primaryKey, pgMaterializedView } from "drizzle-orm/pg-core";
+import {
+  index,
+  pgTableCreator,
+  primaryKey,
+  pgMaterializedView,
+} from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
 
 /**
@@ -8,15 +13,14 @@ import { type AdapterAccount } from "next-auth/adapters";
  *
  * @see https://orm.drizzle.team/docs/goodies#multi-project-schema
  */
-export const createTable = pgTableCreator(
-  (name) => `${name}`,
-);
+export const createTable = pgTableCreator((name) => `${name}`);
 
 export const posts = createTable(
   "post",
   (d) => ({
     id: d.integer().primaryKey().generatedByDefaultAsIdentity(),
-    name: d.varchar({ length: 256 }),
+    content: d.text().notNull(),
+    likes: d.integer().notNull().default(0),
     createdById: d
       .varchar({ length: 255 })
       .notNull()
@@ -27,10 +31,7 @@ export const posts = createTable(
       .notNull(),
     updatedAt: d.timestamp({ withTimezone: true }).$onUpdate(() => new Date()),
   }),
-  (t) => [
-    index("created_by_idx").on(t.createdById),
-    index("name_idx").on(t.name),
-  ],
+  (t) => [index("created_by_idx").on(t.createdById)],
 );
 
 export const users = createTable("user", (d) => ({
@@ -109,74 +110,86 @@ export const verificationTokens = createTable(
   (t) => [primaryKey({ columns: [t.identifier, t.token] })],
 );
 
-export const bibleBook = createTable(
-  "bible_book",
-  (d) => ({
-    book_id: d.serial().primaryKey().notNull(),
-    book_name: d.text().notNull().unique(),
-    book_order: d.integer().notNull().default(0),
-    testament: d.text().notNull(),
-  })
-);
+export const bibleBook = createTable("bible_book", (d) => ({
+  book_id: d.serial().primaryKey().notNull(),
+  book_name: d.text().notNull().unique(),
+  book_order: d.integer().notNull().default(0),
+  testament: d.text().notNull(),
+}));
 
 export const bibleChapter = createTable(
   "bible_chapter",
   (d) => ({
     chapter_id: d.serial().primaryKey().notNull(),
-    book_id: d.integer().notNull().references(() => bibleBook.book_id),
+    book_id: d
+      .integer()
+      .notNull()
+      .references(() => bibleBook.book_id),
     chapter_number: d.integer().notNull(),
   }),
-  (t) => [
-    index("bible_chapter_book_chap_idx").on(t.book_id, t.chapter_number),
-  ]
+  (t) => [index("bible_chapter_book_chap_idx").on(t.book_id, t.chapter_number)],
 );
 
 export const bibleVerse = createTable(
   "bible_verse",
   (d) => ({
     verse_id: d.serial().primaryKey().notNull(),
-    chapter_id: d.integer().notNull().references(() => bibleChapter.chapter_id),
+    chapter_id: d
+      .integer()
+      .notNull()
+      .references(() => bibleChapter.chapter_id),
     verse_number: d.integer().notNull(),
     verse_text: d.text().notNull(),
   }),
-  (t) => [
-    index("bible_verse_chap_verse_idx").on(t.chapter_id, t.verse_number),
-  ]
+  (t) => [index("bible_verse_chap_verse_idx").on(t.chapter_id, t.verse_number)],
 );
 
-export const group = createTable(
-  "group",
-  (d) => ({
-    group_id: d.serial().primaryKey().notNull(),
-    group_name: d.text().notNull().unique(),
-  })
-);
+export const group = createTable("group", (d) => ({
+  group_id: d.serial().primaryKey().notNull(),
+  group_name: d.text().notNull().unique(),
+}));
 
 // Materialized View: Book별 Chapter 수를 계산
-export const bookChapterCount = pgMaterializedView("book_chapter_count").as((qb) =>
-  qb
-    .select({
-      book_id: bibleBook.book_id,
-      book_name: bibleBook.book_name,
-      book_order: bibleBook.book_order,
-      testament: bibleBook.testament,
-      chapter_count: sql<number>`COUNT(${bibleChapter.chapter_id})`.as("chapter_count"),
-    })
-    .from(bibleBook)
-    .leftJoin(bibleChapter, sql`${bibleBook.book_id} = ${bibleChapter.book_id}`)
-    .groupBy(bibleBook.book_id, bibleBook.book_name)
+export const bookChapterCount = pgMaterializedView("book_chapter_count").as(
+  (qb) =>
+    qb
+      .select({
+        book_id: bibleBook.book_id,
+        book_name: bibleBook.book_name,
+        book_order: bibleBook.book_order,
+        testament: bibleBook.testament,
+        chapter_count: sql<number>`COUNT(${bibleChapter.chapter_id})`.as(
+          "chapter_count",
+        ),
+      })
+      .from(bibleBook)
+      .leftJoin(
+        bibleChapter,
+        sql`${bibleBook.book_id} = ${bibleChapter.book_id}`,
+      )
+      .groupBy(bibleBook.book_id, bibleBook.book_name),
 );
 
 // Materialized View: Chapter별 Verse 수를 계산
-export const chapterVerseCount = pgMaterializedView("chapter_verse_count").as((qb) =>
-  qb
-    .select({
-      chapter_id: bibleChapter.chapter_id,
-      book_id: bibleChapter.book_id,
-      chapter_number: bibleChapter.chapter_number,
-      verse_count: sql<number>`COUNT(${bibleVerse.verse_id})`.as("verse_count"),
-    })
-    .from(bibleChapter)
-    .leftJoin(bibleVerse, sql`${bibleChapter.chapter_id} = ${bibleVerse.chapter_id}`)
-    .groupBy(bibleChapter.chapter_id, bibleChapter.book_id, bibleChapter.chapter_number)
+export const chapterVerseCount = pgMaterializedView("chapter_verse_count").as(
+  (qb) =>
+    qb
+      .select({
+        chapter_id: bibleChapter.chapter_id,
+        book_id: bibleChapter.book_id,
+        chapter_number: bibleChapter.chapter_number,
+        verse_count: sql<number>`COUNT(${bibleVerse.verse_id})`.as(
+          "verse_count",
+        ),
+      })
+      .from(bibleChapter)
+      .leftJoin(
+        bibleVerse,
+        sql`${bibleChapter.chapter_id} = ${bibleVerse.chapter_id}`,
+      )
+      .groupBy(
+        bibleChapter.chapter_id,
+        bibleChapter.book_id,
+        bibleChapter.chapter_number,
+      ),
 );
