@@ -1,20 +1,48 @@
 interface ProgressProps {
+  index: number;
   groupName: string;
   progress: number;
 }
 
-export function Progress({ groupName, progress }: ProgressProps) {
+export function Progress({ index, groupName, progress }: ProgressProps) {
   const clampedProgress = Math.min(progress, 100);
 
+  const colorSet = [
+    {
+      background: "#FBE1CC",
+      foreground: "#F9B279",
+    },
+    {
+      background: "#D9EDD9",
+      foreground: "#91D990",
+    },
+    {
+      background: "#D7EDF1",
+      foreground: "#B2DCE3",
+    },
+  ];
+
   return (
-    <div className="flex w-full gap-4 rounded p-4">
-      <h2 className="mb-2 text-lg font-semibold text-nowrap">
-        {groupName} 소그룹
-      </h2>
-      <div className="mb-2 h-4 w-full rounded-full bg-gray-200">
+    <div className="flex w-full gap-2">
+      <div className="flex flex-col items-center gap-2">
         <div
-          className="h-4 rounded-full bg-blue-600 transition-all duration-300"
-          style={{ width: `${clampedProgress}%` }}
+          className="h-[39px] w-[39px] rounded-full"
+          style={{ backgroundColor: colorSet[index % 3]!.background }}
+        ></div>
+        <div className="text-[13px] text-nowrap">
+          <div>{groupName}</div>
+        </div>
+      </div>
+      <div
+        className="h-[39px] w-full rounded-full"
+        style={{ backgroundColor: colorSet[index % 3]!.background }}
+      >
+        <div
+          className="h-[39px] rounded-full transition-all duration-300"
+          style={{
+            width: `${clampedProgress}%`,
+            backgroundColor: colorSet[index % 3]!.foreground,
+          }}
         ></div>
       </div>
     </div>
