@@ -6,6 +6,9 @@ import { HeartIcon } from "./icons/heart-icon";
 export function BottomNavigation() {
   return (
     <>
+      {/* safe area */}
+      <div className="h-[100px] w-full bg-white" />
+      {/* bottom navigation */}
       <div className="fixed bottom-0 left-1/2 flex h-[84px] w-full max-w-[768px] -translate-x-1/2 pt-[14.5px] pb-[28.5px]">
         <nav className="flex w-full items-center justify-around">
           <Link

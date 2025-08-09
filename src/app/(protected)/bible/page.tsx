@@ -25,7 +25,7 @@ export default async function BiblePage({
 
   return (
     <HydrateClient>
-      <div className="fixed inset-0 -z-10 bg-[url('/bg-ivory.png')] bg-cover bg-center opacity-100"></div>
+      <div className="fixed inset-0 bg-[url('/bg-ivory.png')] bg-cover bg-center opacity-100"></div>
 
       <div className="relative px-[32px] py-[20px]">
         <div className="mb-[28px] flex flex-col gap-2">
