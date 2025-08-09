@@ -19,46 +19,51 @@ export function BibleSelect() {
   const versesCount = selectedChapter?.verse_count ?? 0;
 
   return (
-    <div className="mb-4 grid grid-cols-2 gap-4">
-      <select
-        className="rounded border px-2 py-1"
-        value={selectedBookId ?? ""}
-        onChange={(e) => {
-          const val = e.target.value ? Number(e.target.value) : null;
-          setSelectedBookId(val);
-          setSelectedChapterId(null);
-        }}
-      >
-        <option value="">성경을 선택하세요</option>
-        {bibles?.map((b) => (
-          <option key={b.book_id} value={b.book_id}>
-            {b.book_name}
-          </option>
-        ))}
-      </select>
-      <select
-        className="rounded border px-2 py-1"
-        value={selectedChapterId ?? ""}
-        onChange={(e) =>
-          setSelectedChapterId(e.target.value ? Number(e.target.value) : null)
-        }
-        disabled={!selectedBookId}
-      >
-        <option value="">장 선택</option>
-        {chapters.map((ch) => (
-          <option key={ch.chapter_number} value={ch.chapter_id}>
-            {ch.chapter_number}장
-          </option>
-        ))}
-      </select>
+    <div>
+      <div className="mb-[40px] flex h-[40px] w-full gap-2">
+        {/* TODO - Replace with custom dropdown */}
+        <select
+          className="flex-1 rounded-[50px] bg-[#302C27] px-[20px] py-[4px] text-[14px] text-white"
+          value={selectedBookId ?? ""}
+          onChange={(e) => {
+            const val = e.target.value ? Number(e.target.value) : null;
+            setSelectedBookId(val);
+            setSelectedChapterId(null);
+          }}
+        >
+          <option value="">성경</option>
+          {bibles?.map((b) => (
+            <option key={b.book_id} value={b.book_id}>
+              {b.book_name}
+            </option>
+          ))}
+        </select>
 
-      <div className="col-span-2 grid grid-cols-3 gap-2">
+        {/* TODO - Replace with custom dropdown */}
+        <select
+          className="flex-1 rounded-[50px] bg-[#302C27] px-[20px] py-[4px] text-[14px] text-white"
+          value={selectedChapterId ?? ""}
+          onChange={(e) =>
+            setSelectedChapterId(e.target.value ? Number(e.target.value) : null)
+          }
+          disabled={!selectedBookId}
+        >
+          <option value="">장수</option>
+          {chapters.map((ch) => (
+            <option key={ch.chapter_number} value={ch.chapter_id}>
+              {ch.chapter_number}장
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="grid grid-cols-3 gap-3">
         {selectedBookId && selectedChapterId && versesCount > 0
           ? Array.from({ length: versesCount }, (_, index) => (
               <a
                 key={index}
                 href={`/scribe?book_id=${selectedBookId}&chapter_id=${selectedChapterId}&verse_number=${index + 1}`}
-                className="block rounded border p-2 text-center"
+                className="flex h-[50px] w-full items-center justify-center rounded-[50px] bg-[#FFF8F2] p-2 text-[14px] text-[#302C27]"
               >
                 {index + 1}절
               </a>

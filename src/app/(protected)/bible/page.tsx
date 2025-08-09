@@ -19,15 +19,23 @@ export default async function BiblePage({
 
   return (
     <HydrateClient>
-      <div>
-        {group?.group_name}소그룹
-        <br />
-        오늘의 필사도 화이팅!
+      <div className="fixed inset-0 -z-10 bg-[url('/bg-ivory.png')] bg-cover bg-center opacity-100"></div>
+
+      <div className="relative px-[32px] py-[20px]">
+        <div className="mb-[28px] flex flex-col gap-2">
+          <div className="text-[22px]">
+            {group?.group_name} 소그룹
+            <br />
+            오늘의 필사 화이팅!
+          </div>
+
+          <div className="text-[16px] text-[#302C27] opacity-60">
+            필사 할 성경을 선택해줘
+          </div>
+        </div>
+
+        <BibleSelect />
       </div>
-
-      <div>필사 할 성경을 선택해줘</div>
-
-      <BibleSelect />
     </HydrateClient>
   );
 }
