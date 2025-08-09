@@ -34,7 +34,9 @@ export default async function ScribePage({
 
       <div className="relative px-[20px] pt-[108px]">
         <div className="flex w-full justify-end px-[20px]">
-          <Link href={`/bible?group_id=${groupId}`}>
+          <Link
+            href={`/bible?group_id=${groupId}&book_id=${bookId}&chapter_id=${chapterId}`}
+          >
             <XIcon />
           </Link>
         </div>

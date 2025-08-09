@@ -5,9 +5,15 @@ import { BibleSelect } from "./_components/bible-select";
 export default async function BiblePage({
   searchParams,
 }: {
-  searchParams?: Promise<{ group_id?: string }>;
+  searchParams?: Promise<{
+    group_id?: string;
+    book_id?: string;
+    chapter_id?: string;
+  }>;
 }) {
   const groupId = (await searchParams)?.group_id;
+  const bookId = (await searchParams)?.book_id;
+  const chapterId = (await searchParams)?.chapter_id;
   if (!groupId) {
     notFound();
   }
@@ -34,7 +40,7 @@ export default async function BiblePage({
           </div>
         </div>
 
-        <BibleSelect />
+        <BibleSelect groupId={groupId} bookId={bookId} chapterId={chapterId} />
       </div>
     </HydrateClient>
   );

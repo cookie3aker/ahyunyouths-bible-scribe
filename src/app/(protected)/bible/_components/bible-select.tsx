@@ -4,11 +4,19 @@ import { useState } from "react";
 
 import { api } from "~/trpc/react";
 
-export function BibleSelect() {
+interface BibleSelectProps {
+  groupId: string;
+  bookId?: string;
+  chapterId?: string;
+}
+
+export function BibleSelect({ groupId, bookId, chapterId }: BibleSelectProps) {
   const [bibles] = api.bible.getBibleStatistics.useSuspenseQuery();
-  const [selectedBookId, setSelectedBookId] = useState<number | null>(null);
+  const [selectedBookId, setSelectedBookId] = useState<number | null>(
+    bookId ? Number(bookId) : null,
+  );
   const [selectedChapterId, setSelectedChapterId] = useState<number | null>(
-    null,
+    chapterId ? Number(chapterId) : null,
   );
 
   const selectedBook =
@@ -62,7 +70,7 @@ export function BibleSelect() {
           ? Array.from({ length: versesCount }, (_, index) => (
               <a
                 key={index}
-                href={`/scribe?book_id=${selectedBookId}&chapter_id=${selectedChapterId}&verse_number=${index + 1}`}
+                href={`/scribe?group_id=${groupId}&book_id=${selectedBookId}&chapter_id=${selectedChapterId}&verse_number=${index + 1}`}
                 className="flex h-[50px] w-full items-center justify-center rounded-[50px] bg-[#FFF8F2] p-2 text-[14px] text-[#302C27]"
               >
                 {index + 1}절
