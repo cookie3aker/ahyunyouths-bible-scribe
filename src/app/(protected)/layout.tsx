@@ -11,8 +11,8 @@ export default function RootLayout({
 }>) {
   return (
     <>
-      <Header />
-      <main className="p-4">{children}</main>
+      {/* <Header /> */}
+      <main>{children}</main>
       <BottomNavigation />
     </>
   );
