@@ -9,6 +9,12 @@ export const metadata: Metadata = {
   title: "아현젊은이교회 성경필사",
   description: "아현젊은이교회 성경필사",
   icons: [{ rel: "icon", url: "/favicon.png" }],
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  },
 };
 
 const geist = Geist({

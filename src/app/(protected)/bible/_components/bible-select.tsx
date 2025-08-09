@@ -62,6 +62,7 @@ export function BibleSelect({ groupId, bookId, chapterId }: BibleSelectProps) {
           components={{ Option: OptionWithSeparator }}
           classNamePrefix="bible-select"
           className="flex-1"
+          isSearchable={false}
           styles={{
             indicatorSeparator: () => ({
               display: "none",
@@ -125,6 +126,7 @@ export function BibleSelect({ groupId, bookId, chapterId }: BibleSelectProps) {
           components={{ Option: OptionWithSeparator }}
           classNamePrefix="bible-select"
           className="flex-1"
+          isSearchable={false}
           styles={{
             indicatorSeparator: () => ({
               display: "none",
