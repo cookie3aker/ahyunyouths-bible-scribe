@@ -30,7 +30,7 @@ export default async function ScribePage({
 
   return (
     <HydrateClient>
-      <div className="fixed inset-0 -z-10 bg-[url('/bg-ivory.png')] bg-cover bg-center opacity-100"></div>
+      <div className="fixed inset-0 bg-[url('/bg-ivory.png')] bg-cover bg-center opacity-100"></div>
 
       <div className="relative px-[20px] pt-[108px]">
         <div className="flex w-full justify-end px-[20px]">
