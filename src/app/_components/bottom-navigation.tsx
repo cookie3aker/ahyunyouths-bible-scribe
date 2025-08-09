@@ -1,20 +1,36 @@
 import Link from "next/link";
+import { ChurchIcon } from "./icons/church-icon";
+import { BookIcon } from "./icons/book-icon";
+import { HeartIcon } from "./icons/heart-icon";
 
 export function BottomNavigation() {
   return (
     <>
-      {/* safe area */}
-      <div className="h-[84px] w-full"></div>
-      <div className="fixed bottom-0 left-1/2 flex h-[84px] w-full max-w-[768px] -translate-x-1/2">
+      <div className="fixed bottom-0 left-1/2 flex h-[84px] w-full max-w-[768px] -translate-x-1/2 pt-[14.5px] pb-[28.5px]">
         <nav className="flex w-full items-center justify-around">
-          <Link href="/progress" className="text-blue-500 hover:underline">
-            진척도
+          <Link
+            href="/progress"
+            aria-label="모으기"
+            className="flex flex-col items-center gap-2 text-[12px] text-[#302C27]"
+          >
+            <ChurchIcon />
+            <div>모으기</div>
           </Link>
-          <Link href="/" className="text-blue-500 hover:underline">
-            홈
+          <Link
+            href="/"
+            aria-label="채우기"
+            className="flex flex-col items-center gap-2 text-[12px] text-[#302C27]"
+          >
+            <BookIcon />
+            <div>채우기</div>
           </Link>
-          <Link href="/community" className="text-blue-500 hover:underline">
-            커뮤니티
+          <Link
+            href="/community"
+            aria-label="나누기"
+            className="flex flex-col items-center gap-2 text-[12px] text-[#302C27]"
+          >
+            <HeartIcon />
+            <div>나누기</div>
           </Link>
         </nav>
       </div>
