@@ -144,10 +144,6 @@ export function Typing({ targetText }: TypingProps) {
     }
   };
 
-  const handleClickSave = () => {
-    // TODO - 저장 로직 구현
-  };
-
   return (
     <div className="w-full">
       {/* 숨겨진 입력 영역 */}
@@ -174,15 +170,6 @@ export function Typing({ targetText }: TypingProps) {
         <div className="break-words whitespace-pre-wrap opacity-60">
           {renderText()}
         </div>
-      </div>
-
-      <div className="flex w-full justify-end">
-        <button
-          onClick={handleClickSave}
-          className="flex h-[46px] w-full max-w-[130px] cursor-pointer items-center justify-center rounded-[50px] bg-[#302C27] p-2 text-[15px] text-white"
-        >
-          저장하기
-        </button>
       </div>
     </div>
   );
