@@ -9,7 +9,7 @@ export default async function CommunityPage() {
     <main className="flex-grow px-[20px] pt-[36px] pb-[130px]">
       <div className="container flex flex-col items-center justify-center">
         <div className="mb-[10px] w-full">
-          <p className="text-[22px] text-[#302C27]">
+          <p className="text-[22px] font-bold text-[#302C27]">
             필사를 하며 느낀
             <br />
             은혜를 나눠줘!
@@ -19,7 +19,7 @@ export default async function CommunityPage() {
         <div className="mb-[18px] flex w-full justify-end">
           <Link
             href="/community/write"
-            className="flex h-[38px] w-full max-w-[85px] cursor-pointer items-center justify-center rounded-[50px] bg-[#302C27] p-2 text-[14px] text-white"
+            className="flex h-[38px] w-full max-w-[85px] cursor-pointer items-center justify-center rounded-[50px] bg-[#CFE3EF] p-2 text-[14px] text-[#63A3CB]"
           >
             글쓰기
           </Link>

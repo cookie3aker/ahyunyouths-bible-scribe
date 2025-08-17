@@ -27,12 +27,12 @@ export function Post({ id, author, content, likes }: PostProps) {
 
   return (
     <div className="flex w-full flex-col gap-4 rounded-[20px] bg-[#F5F1EE] px-[20px] py-[25px] shadow-md">
-      <div className="flex w-full items-center justify-between gap-4">
-        <p className="flex-1 text-[15px] text-[#302C27]">{content}</p>
-        <button onClick={onClickLike} className="self-start">
-          {/* TODO - set user's real liked */}
-          <LikeBigIcon liked={id % 2 === 0} />
-        </button>
+      <div className="flex w-full flex-col gap-4">
+        <div className="flex w-full items-center justify-between gap-4">
+          <span className="text-[12px] text-[#4B4B4A]">성경 장:절</span>
+          <span className="text-[12px] text-[#4B4B4A]">글쓴이</span>
+        </div>
+        <p className="flex-1 text-[15px] font-bold">{content}</p>
       </div>
       <div className="flex items-center gap-1">
         <LikeSmallIcon />{" "}
