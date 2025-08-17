@@ -14,9 +14,7 @@ export default function RootLayout({
         <header className="mt-[60px] mb-[34px] w-full px-[22px]">
           <Header />
         </header>
-        <main className="flex-grow rounded-t-[24px] bg-[url('/bg-ivory.jpg')] bg-cover bg-center px-[20px] pt-[36px] pb-[130px]">
-          {children}
-        </main>
+        {children}
         <footer className="fixed bottom-0 left-1/2 flex h-[106px] w-full max-w-[768px] -translate-x-1/2 bg-white pt-[14.5px] pb-[28.5px]">
           <BottomNavigation />
         </footer>

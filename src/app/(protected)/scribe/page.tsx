@@ -30,24 +30,26 @@ export default async function ScribePage({
 
   return (
     <HydrateClient>
-      <div className="fixed inset-0 bg-[url('/bg-ivory.png')] bg-cover bg-center opacity-100"></div>
+      <main className="flex-grow rounded-t-[24px] bg-[url('/bg-ivory.jpg')] bg-cover bg-center px-[20px] pt-[36px] pb-[130px]">
+        <div className="fixed inset-0 bg-[url('/bg-ivory.png')] bg-cover bg-center opacity-100"></div>
 
-      <div className="relative px-[20px] pt-[108px]">
-        <div className="flex w-full justify-end px-[20px]">
-          <Link
-            href={`/bible?group_id=${groupId}&book_id=${bookId}&chapter_id=${chapterId}`}
-          >
-            <XIcon />
-          </Link>
+        <div className="relative px-[20px] pt-[108px]">
+          <div className="flex w-full justify-end px-[20px]">
+            <Link
+              href={`/bible?group_id=${groupId}&book_id=${bookId}&chapter_id=${chapterId}`}
+            >
+              <XIcon />
+            </Link>
+          </div>
+
+          <div className="mb-[42px] text-[22px] text-[#302C27]">
+            {verse?.book?.book_name} {verse?.chapter.chapter_number}:
+            {verse?.verse.verse_number}
+          </div>
+
+          <Typing targetText={verse?.verse.verse_text ?? ""} />
         </div>
-
-        <div className="mb-[42px] text-[22px] text-[#302C27]">
-          {verse?.book?.book_name} {verse?.chapter.chapter_number}:
-          {verse?.verse.verse_number}
-        </div>
-
-        <Typing targetText={verse?.verse.verse_text ?? ""} />
-      </div>
+      </main>
     </HydrateClient>
   );
 }
