@@ -1,7 +1,7 @@
 import { api, HydrateClient } from "~/trpc/server";
-import { SetProfileModal } from "../_components/set-profile-modal";
 import { auth } from "~/server/auth";
 import { redirect } from "next/navigation";
+import { SelectGroup } from "./_components/select-group";
 
 export default async function Home() {
   const session = await auth();
@@ -28,23 +28,7 @@ export default async function Home() {
             </div>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
-            {groups.map((it) => (
-              <a
-                key={it.group_id}
-                className="h-[50px] w-[96px] cursor-pointer rounded-[50px] bg-white/30 p-4 text-center text-[14px] text-white hover:bg-[#CFE3EF] hover:text-black"
-                href={`/bible?group_id=${it.group_id}`}
-              >
-                {it.group_name}
-              </a>
-            ))}
-          </div>
-          {!session?.user.groupId && (
-            <SetProfileModal
-              name={session?.user.name ?? ""}
-              email={session?.user.email ?? ""}
-            />
-          )}
+          <SelectGroup groups={groups} />
         </div>
       </div>
     </HydrateClient>

@@ -6,40 +6,36 @@ export default async function CommunityPage() {
   const posts = await api.post.getAllPosts();
 
   return (
-    <div>
-      <div className="fixed inset-0 bg-[url('/main-bg.png')] bg-cover bg-center opacity-100"></div>
+    <div className="container flex flex-col items-center justify-center">
+      <div className="mb-[10px] w-full">
+        <p className="text-[22px] text-[#302C27]">
+          필사를 하며 느낀
+          <br />
+          은혜를 나눠줘!
+        </p>
+      </div>
 
-      <div className="relative container mt-[112px] flex flex-col items-center justify-center px-[20px]">
-        <div className="mb-[10px] w-full">
-          <p className="text-[22px] text-[#302C27]">
-            필사를 하며 느낀
-            <br />
-            은혜를 나눠줘!
-          </p>
-        </div>
+      <div className="mb-[18px] flex w-full justify-end">
+        <Link
+          href="/community/write"
+          className="flex h-[38px] w-full max-w-[85px] cursor-pointer items-center justify-center rounded-[50px] bg-[#302C27] p-2 text-[14px] text-white"
+        >
+          글쓰기
+        </Link>
+      </div>
 
-        <div className="mb-[18px] flex w-full justify-end">
-          <Link
-            href="/community/write"
-            className="flex h-[38px] w-full max-w-[85px] cursor-pointer items-center justify-center rounded-[50px] bg-[#302C27] p-2 text-[14px] text-white"
-          >
-            글쓰기
-          </Link>
-        </div>
-
-        <div className="flex w-full flex-col items-center justify-center gap-4">
-          {posts.map((it) => (
-            <Post
-              key={it.id}
-              id={it.id}
-              author={""}
-              content={it.content}
-              likes={it.likes}
-              // createdAt={it.createdAt.toISOString()}
-              // updatedAt={it.updatedAt.toISOString()}
-            />
-          ))}
-        </div>
+      <div className="flex w-full flex-col items-center justify-center gap-4">
+        {posts.map((it) => (
+          <Post
+            key={it.id}
+            id={it.id}
+            author={""}
+            content={it.content}
+            likes={it.likes}
+            // createdAt={it.createdAt.toISOString()}
+            // updatedAt={it.updatedAt.toISOString()}
+          />
+        ))}
       </div>
     </div>
   );

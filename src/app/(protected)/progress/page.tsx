@@ -6,17 +6,15 @@ export default async function ProgressPage() {
 
   return (
     <HydrateClient>
-      <div className="fixed inset-0 bg-[url('/bg-ivory.png')] bg-cover bg-center opacity-100"></div>
-
-      <div className="relative container flex flex-col items-center justify-center gap-12">
-        <div className="mt-[36px] w-full px-[42px]">
+      <div className="container flex flex-col items-center justify-center gap-12">
+        <div className="w-full">
           <h2 className="mb-[8px] text-[14px] text-[#736F6A]">
             우리의 필사 완성도
           </h2>
           <div className="text-[22px] text-[#302C27]">새싹 Lv.2</div>
         </div>
 
-        <div className="w-full px-[42px]">
+        <div className="w-full">
           <h2 className="mb-[24px]">소그룹별 필사</h2>
           <div className="flex w-full flex-col gap-4">
             {groups.map((group, index) => (

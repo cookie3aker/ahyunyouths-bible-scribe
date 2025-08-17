@@ -8,16 +8,22 @@ export const userRouter = createTRPCRouter({
   update: protectedProcedure
     .input(
       z.object({
-        name: z.string().min(1, "Name is required"),
-        groupId: z.number().int().min(1, "Group ID must be a positive integer"),
+        name: z.string().min(1, "Name is required").optional(),
+        groupId: z
+          .number()
+          .int()
+          .min(1, "Group ID must be a positive integer")
+          .optional(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const { name, groupId } = input;
+      const updateData: Partial<typeof input> = {};
+      if (input.name) updateData.name = input.name;
+      if (input.groupId) updateData.groupId = input.groupId;
 
       await ctx.db
         .update(users)
-        .set({ name, groupId })
+        .set(updateData)
         .where(eq(users.id, ctx.session.user.id));
 
       return { success: true };
