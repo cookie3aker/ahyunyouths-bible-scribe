@@ -1,9 +1,6 @@
-import { auth } from "~/server/auth";
-import { api } from "~/trpc/server";
-
 export async function Header() {
   return (
-    <header className="mt-[60px] w-full">
+    <header className="relative z-10 mt-[60px] w-full px-[22px]">
       <ul className="flex w-full items-center justify-end gap-[20px]">
         <li className="text-[14px] font-bold text-[#FFF8F2]">
           아현젊은이교회 성경 필사
