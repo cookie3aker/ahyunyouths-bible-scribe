@@ -3,29 +3,32 @@ import { notFound } from "next/navigation";
 import { Typing } from "./_components/typing";
 import { XIcon } from "~/app/_components/icons/x-icon";
 import Link from "next/link";
+import { auth } from "~/server/auth";
 
 export default async function ScribePage({
   searchParams,
 }: {
   searchParams?: Promise<{
-    group_id?: string;
     book_id?: string;
     chapter_id?: string;
-    verse_number?: string;
+    verse_id?: string;
   }>;
 }) {
-  const groupId = (await searchParams)?.group_id;
+  const session = await auth();
+
+  const userId = session?.user.id;
+  const groupId = session?.user.groupId;
   const bookId = (await searchParams)?.book_id;
   const chapterId = (await searchParams)?.chapter_id;
-  const verseNumber = (await searchParams)?.verse_number;
-  if (!groupId || !bookId || !chapterId || !verseNumber) {
+  const verseId = (await searchParams)?.verse_id;
+  if (!userId || !groupId || !groupId || !bookId || !chapterId || !verseId) {
     notFound();
   }
 
   const verse = await api.bible.getVerse({
     book_id: Number(bookId),
     chapter_id: Number(chapterId),
-    verse_number: Number(verseNumber),
+    verse_id: Number(verseId),
   });
 
   return (
@@ -47,7 +50,14 @@ export default async function ScribePage({
             {verse?.verse.verse_number}
           </div>
 
-          <Typing targetText={verse?.verse.verse_text ?? ""} />
+          <Typing
+            targetText={verse?.verse.verse_text ?? ""}
+            userId={userId}
+            groupId={groupId}
+            bookId={Number(bookId)}
+            chapterId={Number(chapterId)}
+            verseId={Number(verseId)}
+          />
         </div>
       </main>
     </HydrateClient>

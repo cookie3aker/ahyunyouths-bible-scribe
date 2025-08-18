@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Select, { components } from "react-select";
 import type { OptionProps, GroupBase } from "react-select";
+import { api } from "~/trpc/react";
 
 type OptionType = { value: number; label: string };
 
@@ -31,8 +32,6 @@ const OptionWithSeparator = (
   );
 };
 
-import { api } from "~/trpc/react";
-
 interface BibleSelectProps {
   groupId: string;
   bookId?: string;
@@ -50,10 +49,10 @@ export function BibleSelect({ groupId, bookId, chapterId }: BibleSelectProps) {
 
   const selectedBook =
     bibles?.find((b) => b.book_id === selectedBookId) ?? null;
-  const chapters = selectedBook?.chaptersWithVerseCount ?? [];
+  const chapters = selectedBook?.chaptersWithVerses ?? [];
   const selectedChapter =
     chapters.find((ch) => ch.chapter_id === selectedChapterId) ?? null;
-  const versesCount = selectedChapter?.verse_count ?? 0;
+  const verses = selectedChapter?.verses ?? [];
 
   return (
     <div>
@@ -186,14 +185,14 @@ export function BibleSelect({ groupId, bookId, chapterId }: BibleSelectProps) {
       </div>
 
       <div className="grid grid-cols-3 gap-3">
-        {selectedBookId && selectedChapterId && versesCount > 0
-          ? Array.from({ length: versesCount }, (_, index) => (
+        {selectedBookId && selectedChapterId && verses.length > 0
+          ? verses.map((it) => (
               <a
-                key={index}
-                href={`/scribe?group_id=${groupId}&book_id=${selectedBookId}&chapter_id=${selectedChapterId}&verse_number=${index + 1}`}
+                key={it.verse_id}
+                href={`/scribe?book_id=${selectedBookId}&chapter_id=${selectedChapterId}&verse_id=${it.verse_id}`}
                 className="flex h-[50px] w-full items-center justify-center rounded-[50px] bg-[#FFF8F2] p-2 text-[14px] text-[#302C27]"
               >
-                {index + 1}절
+                {it.verse_number}절
               </a>
             ))
           : null}

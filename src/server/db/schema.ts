@@ -194,3 +194,64 @@ export const chapterVerseCount = pgMaterializedView("chapter_verse_count").as(
         bibleChapter.chapter_number,
       ),
 );
+
+export const bibleScribe = createTable(
+  "bible_scribe",
+  (d) => ({
+    scribe_id: d.serial().primaryKey().notNull(),
+    user_id: d
+      .varchar({ length: 255 })
+      .notNull()
+      .references(() => users.id),
+    group_id: d
+      .integer()
+      .notNull()
+      .references(() => group.group_id),
+    book_id: d
+      .integer()
+      .notNull()
+      .references(() => bibleBook.book_id),
+    chapter_id: d
+      .integer()
+      .notNull()
+      .references(() => bibleChapter.chapter_id),
+    verse_id: d
+      .integer()
+      .notNull()
+      .references(() => bibleVerse.verse_id),
+    created_at: d
+      .timestamp({ mode: "date", withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  }),
+  (t) => [
+    index("bible_scribe_user_idx").on(t.user_id),
+    index("bible_scribe_group_idx").on(t.group_id),
+    index("bible_scribe_book_idx").on(t.book_id),
+    index("bible_scribe_chapter_idx").on(t.chapter_id),
+    index("bible_scribe_verse_idx").on(t.verse_id),
+  ],
+);
+
+export const bibleScribeRelations = relations(bibleScribe, ({ one }) => ({
+  user: one(users, {
+    fields: [bibleScribe.user_id],
+    references: [users.id],
+  }),
+  group: one(group, {
+    fields: [bibleScribe.group_id],
+    references: [group.group_id],
+  }),
+  book: one(bibleBook, {
+    fields: [bibleScribe.book_id],
+    references: [bibleBook.book_id],
+  }),
+  chapter: one(bibleChapter, {
+    fields: [bibleScribe.chapter_id],
+    references: [bibleChapter.chapter_id],
+  }),
+  verse: one(bibleVerse, {
+    fields: [bibleScribe.verse_id],
+    references: [bibleVerse.verse_id],
+  }),
+}));

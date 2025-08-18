@@ -1,17 +1,41 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { api } from "~/trpc/react";
 
 interface TypingProps {
   targetText: string;
+  userId: string;
+  groupId: number;
+  bookId: number;
+  chapterId: number;
+  verseId: number;
 }
 
-export function Typing({ targetText }: TypingProps) {
+export function Typing({
+  targetText,
+  userId,
+  groupId,
+  bookId,
+  chapterId,
+  verseId,
+}: TypingProps) {
   const [currentInput, setCurrentInput] = useState("");
   const [currentPosition, setCurrentPosition] = useState(0);
   const [isComposing, setIsComposing] = useState(false);
   const hiddenInputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [canEdit, setCanEdit] = useState(true);
+
+  const { data: subScribeData } = api.bible.getScribe.useQuery({
+    user_id: userId,
+    group_id: groupId,
+    book_id: bookId,
+    chapter_id: chapterId,
+    verse_id: verseId,
+  });
+
+  const { mutateAsync: saveScribe } = api.bible.saveScribe.useMutation();
 
   useEffect(() => {
     // 컴포넌트 마운트 시 숨겨진 input에 포커스
@@ -22,14 +46,35 @@ export function Typing({ targetText }: TypingProps) {
 
   useEffect(() => {
     // 모든 글자가 일치하는지 확인 (조합 중이 아닐 때만)
+    if (subScribeData) {
+      // 구독 데이터가 있다면 현재 입력값을 초기화
+      setCurrentInput(targetText);
+      setCurrentPosition(targetText.length);
+      setCanEdit(false); // 필사 완료 후 수정 불가
+      return;
+    }
+
     if (
       !isComposing &&
       currentInput.length === targetText.length &&
       currentInput === targetText
     ) {
-      // alert("필사 완료! 수고하셨습니다.");
+      setCanEdit(false);
+      saveScribe({
+        user_id: userId,
+        group_id: groupId,
+        book_id: bookId,
+        chapter_id: chapterId,
+        verse_id: verseId,
+      })
+        .then(() => {
+          console.log("Scribe saved successfully");
+        })
+        .catch((error) => {
+          console.error("Failed to save scribe:", error);
+        });
     }
-  }, [currentInput, isComposing]);
+  }, [currentInput, isComposing, subScribeData]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -158,6 +203,7 @@ export function Typing({ targetText }: TypingProps) {
         onCompositionEnd={handleCompositionEnd}
         className="-left-9999px absolute opacity-0"
         autoComplete="off"
+        disabled={!canEdit}
       />
 
       {/* 필사 텍스트 표시 영역 */}
