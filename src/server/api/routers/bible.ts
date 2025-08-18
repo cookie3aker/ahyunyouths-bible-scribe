@@ -38,7 +38,10 @@ export const bibleRouter = createTRPCRouter({
       columns: {
         verse_text: false,
       },
-      orderBy: (verse, { asc }) => [asc(verse.chapter_id), asc(verse.verse_id)],
+      orderBy: (verse, { asc }) => [
+        asc(verse.chapter_id),
+        asc(verse.verse_number),
+      ],
     });
 
     // chapter_id별로 벌스 그룹핑
@@ -177,5 +180,33 @@ export const bibleRouter = createTRPCRouter({
           ),
       });
       return scribe;
+    }),
+
+  // get scribe data by group_id and book_id
+  getScribeByGroup: protectedProcedure
+    .input(
+      z.object({
+        group_id: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const scribes = await ctx.db.query.bibleScribe.findMany({
+        where: (bs, { eq }) => eq(bs.group_id, input.group_id),
+        orderBy: (bs, { asc }) => [
+          asc(bs.book_id),
+          asc(bs.chapter_id),
+          asc(bs.verse_id),
+        ],
+      });
+
+      // Group scribes by book_id
+      const scribesByBook: Record<number, typeof scribes> = {};
+      for (const scribe of scribes) {
+        const bookId = scribe.book_id;
+        scribesByBook[bookId] ??= [];
+        scribesByBook[bookId].push(scribe);
+      }
+
+      return scribesByBook;
     }),
 });

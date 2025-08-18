@@ -22,6 +22,9 @@ export default async function BiblePage({
   const group = groups.find((g) => g.group_id === Number(groupId));
 
   void api.bible.getBibleStatistics.prefetch();
+  void api.bible.getScribeByGroup.prefetch({
+    group_id: Number(groupId),
+  });
 
   return (
     <HydrateClient>
