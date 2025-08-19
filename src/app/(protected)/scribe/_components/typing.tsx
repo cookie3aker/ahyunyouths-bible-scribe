@@ -148,8 +148,7 @@ export function Typing({
           if (currentInput[index] === char) {
             textColor = "text-blue-600"; // 일치하는 경우 색깔
           } else {
-            textColor = "text-red-500"; // 불일치하는 경우 빨간색
-            className += "bg-red-200 "; // 빨간색 배경
+            textColor = "text-red-600"; // 불일치하는 경우 빨간색
           }
         } else {
           // 조합 중인 글자는 중성 색상으로 표시
