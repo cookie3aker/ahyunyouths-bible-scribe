@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { eq } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import {
@@ -9,6 +9,7 @@ import {
   bibleChapter,
   bibleVerse,
   bibleScribe,
+  group,
 } from "~/server/db/schema";
 
 export const bibleRouter = createTRPCRouter({
@@ -209,4 +210,39 @@ export const bibleRouter = createTRPCRouter({
 
       return scribesByBook;
     }),
+
+  // 모든 groupId를 키값으로 하고 GroupId에 해당하는 레코드들의 count값을 객체로 반환
+  getScribeCountByGroup: protectedProcedure.query(async ({ ctx }) => {
+    // 모든 group 조회
+    const allGroups = await ctx.db.query.group.findMany({
+      columns: {
+        group_id: true,
+      },
+    });
+
+    // 각 group의 scribe count 조회
+    const counts = await ctx.db
+      .select({
+        group_id: bibleScribe.group_id,
+        count: count(),
+      })
+      .from(bibleScribe)
+      .groupBy(bibleScribe.group_id);
+
+    // Convert to object with group_id as key
+    const countByGroup: Record<number, number> = {};
+
+    // 모든 group_id를 0으로 초기화
+    for (const group of allGroups) {
+      countByGroup[group.group_id] = 0;
+    }
+
+    // count가 있는 group_id는 실제 count 값으로 업데이트
+    for (const { group_id, count } of counts) {
+      countByGroup[group_id] = Number(count);
+    }
+
+    return countByGroup;
+  }),
+
 });

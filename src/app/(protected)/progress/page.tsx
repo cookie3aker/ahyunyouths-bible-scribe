@@ -1,8 +1,11 @@
 import { api, HydrateClient } from "~/trpc/server";
 import { Progress } from "./_components/progress";
+import { challenge } from "~/policy/challenge";
 
 export default async function ProgressPage() {
   const groups = await api.group.getGroups();
+
+  const scribeCountByGroup = await api.bible.getScribeCountByGroup();
 
   return (
     <HydrateClient>
@@ -23,7 +26,12 @@ export default async function ProgressPage() {
                   key={group.group_id}
                   index={index}
                   groupName={group.group_name}
-                  progress={index * 10} // 예시로 10%씩 증가
+                  progress={
+                    ((scribeCountByGroup[group.group_id] ?? 0) /
+                      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+                      (challenge[group.group_id]?.chapterCount ?? 1)) *
+                    100
+                  }
                 />
               ))}
             </div>
