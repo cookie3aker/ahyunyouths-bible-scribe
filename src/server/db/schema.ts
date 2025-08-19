@@ -25,14 +25,50 @@ export const posts = createTable(
       .varchar({ length: 255 })
       .notNull()
       .references(() => users.id),
+    bookId: d
+      .integer()
+      .notNull()
+      .references(() => bibleBook.book_id),
+    chapterId: d
+      .integer()
+      .notNull()
+      .references(() => bibleChapter.chapter_id),
+    verseId: d
+      .integer()
+      .notNull()
+      .references(() => bibleVerse.verse_id),
     createdAt: d
       .timestamp({ withTimezone: true })
       .default(sql`CURRENT_TIMESTAMP`)
       .notNull(),
     updatedAt: d.timestamp({ withTimezone: true }).$onUpdate(() => new Date()),
   }),
-  (t) => [index("created_by_idx").on(t.createdById)],
+  (t) => [
+    index("created_by_idx").on(t.createdById),
+    index("post_book_idx").on(t.bookId),
+    index("post_chapter_idx").on(t.chapterId),
+    index("post_verse_idx").on(t.verseId),
+  ],
 );
+
+export const postsRelations = relations(posts, ({ one }) => ({
+  createdBy: one(users, {
+    fields: [posts.createdById],
+    references: [users.id],
+  }),
+  book: one(bibleBook, {
+    fields: [posts.bookId],
+    references: [bibleBook.book_id],
+  }),
+  chapter: one(bibleChapter, {
+    fields: [posts.chapterId],
+    references: [bibleChapter.chapter_id],
+  }),
+  verse: one(bibleVerse, {
+    fields: [posts.verseId],
+    references: [bibleVerse.verse_id],
+  }),
+}));
 
 export const users = createTable("user", (d) => ({
   id: d

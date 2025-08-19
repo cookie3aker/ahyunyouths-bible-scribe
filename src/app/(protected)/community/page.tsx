@@ -30,7 +30,7 @@ export default async function CommunityPage() {
             <Post
               key={it.id}
               id={it.id}
-              author={""}
+              author={it.createdBy.name ?? ""}
               content={it.content}
               likes={it.likes}
               // createdAt={it.createdAt.toISOString()}

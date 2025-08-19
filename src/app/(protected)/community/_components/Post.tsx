@@ -21,6 +21,8 @@ export function Post({ id, author, content, likes }: PostProps) {
 
   const onClickLike = async () => {
     // TODO - 한 사람이 한 게시글에 대해 한 번만 좋아요를 누를 수 있도록 처리
+    // 현재 유저가 해당 게시글에 대해 좋아요를 누른 적이 있는지 체크
+
     await mutateAsync({ postId: id });
     setLikeCount((prev) => prev + 1);
   };
@@ -30,7 +32,7 @@ export function Post({ id, author, content, likes }: PostProps) {
       <div className="flex w-full flex-col gap-4">
         <div className="flex w-full items-center justify-between gap-4">
           <span className="text-[12px] text-[#4B4B4A]">성경 장:절</span>
-          <span className="text-[12px] text-[#4B4B4A]">글쓴이</span>
+          <span className="text-[12px] text-[#4B4B4A]">{author}</span>
         </div>
         <p className="flex-1 text-[15px] font-bold">{content}</p>
       </div>
