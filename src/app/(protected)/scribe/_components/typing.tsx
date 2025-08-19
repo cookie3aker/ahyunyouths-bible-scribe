@@ -135,7 +135,7 @@ export function Typing({
 
   const renderText = () => {
     return targetText.split("").map((char, index) => {
-      let className = "text-[16px] relative inline-block ";
+      let className = "font-bold text-[16px] relative inline-block ";
       let displayChar = char;
       let textColor = "text-gray-400"; // 기본 회색
 
@@ -146,7 +146,7 @@ export function Typing({
         // 조합 중이 아닐 때만 색상 검증
         if (!isComposing || index < currentPosition) {
           if (currentInput[index] === char) {
-            textColor = "text-[#FB9B01]"; // 일치하는 경우 검은색
+            textColor = "text-[#FA9A00]"; // 일치하는 경우 검은색
           } else {
             textColor = "text-red-500"; // 불일치하는 경우 빨간색
             className += "bg-red-200 "; // 빨간색 배경
