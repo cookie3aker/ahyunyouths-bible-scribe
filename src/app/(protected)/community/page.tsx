@@ -32,6 +32,9 @@ export default async function CommunityPage() {
               id={it.id}
               author={it.createdBy.name ?? ""}
               content={it.content}
+              bookName={it.book.book_name}
+              chapterNumber={it.chapter.chapter_number}
+              verseNumber={it.verse.verse_number}
               likes={it.likes}
               // createdAt={it.createdAt.toISOString()}
               // updatedAt={it.updatedAt.toISOString()}

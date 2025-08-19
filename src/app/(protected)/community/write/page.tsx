@@ -2,16 +2,52 @@
 
 import { useState } from "react";
 import type { ChangeEvent } from "react";
+import BottomSheet, { type BibleSelection } from "./_components/bottom-sheet";
+import { api } from "~/trpc/react";
+import { useRouter } from "next/navigation";
 
 export default function WritePage() {
   const [content, setContent] = useState("");
+  const [isBottomSheetOpen, setIsBottomSheetOpen] = useState(false);
+  const [selectedBible, setSelectedBible] = useState<BibleSelection | null>(
+    null,
+  );
+
+  const router = useRouter();
+  const { mutateAsync: createPost } = api.post.create.useMutation();
 
   const handleTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     const newValue = e.target.value;
     if (newValue.length <= 500) {
       setContent(newValue);
       e.target.style.height = "auto";
-      e.target.style.height = `${Math.max(320, e.target.scrollHeight)}px`;
+      e.target.style.height = `${Math.max(120, e.target.scrollHeight)}px`;
+    }
+  };
+
+  const handleClickSelectBible = () => {
+    setSelectedBible(null);
+    setIsBottomSheetOpen(true);
+  };
+
+  const handleClickSave = async () => {
+    if (
+      !selectedBible?.bookId ||
+      !selectedBible?.chapterId ||
+      !selectedBible?.verseId
+    )
+      return;
+
+    try {
+      await createPost({
+        content,
+        bookId: selectedBible.bookId,
+        chapterId: selectedBible.chapterId,
+        verseId: selectedBible.verseId,
+      });
+      router.push("/community");
+    } catch (error) {
+      console.error("Failed to create post:", error);
     }
   };
 
@@ -26,9 +62,14 @@ export default function WritePage() {
       </div>
 
       <div>
-        <button className="flex h-[74px] w-full justify-between rounded-t-[20px] bg-[#CFE3EF]/60 px-[20px] py-[16px]">
+        <button
+          onClick={handleClickSelectBible}
+          className="flex h-[74px] w-full justify-between rounded-t-[20px] bg-[#CFE3EF]/60 px-[20px] py-[16px]"
+        >
           <span className="text-[12px] font-bold text-[#4B90BB]">
-            은혜 받았던 본문을 선택해줘
+            {selectedBible
+              ? `${selectedBible.bookName} ${selectedBible.chapterNumber}:${selectedBible.verseNumber}`
+              : "은혜 받았던 본문을 선택해줘"}
           </span>
           <svg
             width="19"
@@ -40,11 +81,20 @@ export default function WritePage() {
             <path
               d="M1.5 1L9.5 9L17.5 1"
               stroke="#72A8CB"
-              stroke-width="2"
-              stroke-linecap="round"
+              strokeWidth="2"
+              strokeLinecap="round"
             />
           </svg>
         </button>
+
+        <BottomSheet
+          isOpen={isBottomSheetOpen}
+          onClose={() => setIsBottomSheetOpen(false)}
+          onSelect={(selection) => {
+            setSelectedBible(selection);
+            setIsBottomSheetOpen(false);
+          }}
+        />
 
         <div className="relative mb-[36px]">
           <textarea
@@ -60,7 +110,10 @@ export default function WritePage() {
           </div>
         </div>
 
-        <button className="h-[44px] w-full rounded-[20px] bg-[#CFE3EF] text-[14px] font-bold text-[#4B90BB]">
+        <button
+          onClick={handleClickSave}
+          className="h-[44px] w-full rounded-[20px] bg-[#CFE3EF] text-[14px] font-bold text-[#4B90BB]"
+        >
           저장하기
         </button>
       </div>

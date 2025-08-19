@@ -9,12 +9,23 @@ interface PostProps {
   id: number;
   author: string;
   content: string;
+  bookName: string;
+  chapterNumber: number;
+  verseNumber: number;
   likes: number;
   createdAt?: string; // Optional, if you want to display the creation date
   updatedAt?: string; // Optional, if you want to display the last update date
 }
 
-export function Post({ id, author, content, likes }: PostProps) {
+export function Post({
+  id,
+  author,
+  content,
+  bookName,
+  chapterNumber,
+  verseNumber,
+  likes,
+}: PostProps) {
   const [likeCount, setLikeCount] = useState(likes);
 
   const { mutateAsync } = api.post.like.useMutation();
@@ -31,7 +42,9 @@ export function Post({ id, author, content, likes }: PostProps) {
     <div className="flex w-full flex-col gap-4 rounded-[20px] bg-[#F5F1EE] px-[20px] py-[25px] shadow-md">
       <div className="flex w-full flex-col gap-4">
         <div className="flex w-full items-center justify-between gap-4">
-          <span className="text-[12px] text-[#4B4B4A]">성경 장:절</span>
+          <span className="text-[12px] text-[#4B4B4A]">
+            {bookName} {chapterNumber}:{verseNumber}
+          </span>
           <span className="text-[12px] text-[#4B4B4A]">{author}</span>
         </div>
         <p className="flex-1 text-[15px] font-bold">{content}</p>
