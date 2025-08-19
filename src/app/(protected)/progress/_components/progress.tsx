@@ -1,3 +1,7 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
 interface ProgressProps {
   index: number;
   groupName: string;
@@ -5,7 +9,14 @@ interface ProgressProps {
 }
 
 export function Progress({ index, groupName, progress }: ProgressProps) {
-  const clampedProgress = Math.min(progress, 100);
+  const [currentProgress, setCurrentProgress] = useState(0);
+
+  useEffect(() => {
+    // 첫 렌더링 후 실제 progress 값으로 변경
+    requestAnimationFrame(() => {
+      setCurrentProgress(Math.min(progress, 100));
+    });
+  }, [progress]);
 
   const colorSet = [
     {
@@ -34,13 +45,13 @@ export function Progress({ index, groupName, progress }: ProgressProps) {
         </div>
       </div>
       <div
-        className="h-[39px] w-full rounded-full"
+        className="h-[39px] w-full overflow-hidden rounded-full"
         style={{ backgroundColor: colorSet[index % 3]!.background }}
       >
         <div
-          className="h-[39px] rounded-full transition-all duration-300"
+          className="h-[39px] w-full rounded-full transition-transform duration-300 ease-out"
           style={{
-            width: `${clampedProgress}%`,
+            transform: `translateX(${currentProgress - 100}%)`,
             backgroundColor: colorSet[index % 3]!.foreground,
           }}
         ></div>

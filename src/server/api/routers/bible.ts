@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { count, eq } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import {
@@ -10,6 +10,7 @@ import {
   bibleVerse,
   bibleScribe,
   group,
+  chapterGroupScribeCount,
 } from "~/server/db/schema";
 import { challenge } from "~/policy/challenge";
 
@@ -221,15 +222,6 @@ export const bibleRouter = createTRPCRouter({
       },
     });
 
-    // 각 group의 scribe count 조회
-    const counts = await ctx.db
-      .select({
-        group_id: bibleScribe.group_id,
-        count: count(),
-      })
-      .from(bibleScribe)
-      .groupBy(bibleScribe.group_id);
-
     // Convert to object with group_id as key
     const countByGroup: Record<
       number,
@@ -239,23 +231,40 @@ export const bibleRouter = createTRPCRouter({
       }
     > = {};
 
-    // 모든 group_id를 0으로 초기화
-    for (const group of allGroups) {
-      countByGroup[group.group_id] = {
-        count: 0,
-        total:
-          (challenge as Record<number, { total: number }>)[group.group_id]
-            ?.total ?? 0,
-      };
-    }
+    // 모든 그룹에 대한 완료된 챕터 수를 한 번에 조회
+    const result = await ctx.db
+      .select({
+        group_id: chapterGroupScribeCount.group_id,
+        book_id: chapterGroupScribeCount.book_id,
+        chapter_id: chapterGroupScribeCount.chapter_id,
+      })
+      .from(chapterGroupScribeCount)
+      .where(
+        sql`${chapterGroupScribeCount.verse_count} = ${chapterGroupScribeCount.total_verse_count} AND ${chapterGroupScribeCount.total_verse_count} > 0`,
+      );
 
-    // count가 있는 group_id는 실제 count 값으로 업데이트
-    for (const { group_id, count } of counts) {
-      countByGroup[group_id] = {
-        count: Number(count),
+    // 각 그룹별로 처리
+    for (const group of allGroups) {
+      const groupId = group.group_id;
+      const challengeBooks =
+        (challenge as Record<number, { books: number[] }>)[groupId]?.books ??
+        [];
+
+      // 해당 그룹의 완료된 챕터 수 계산
+      const completedCount = result.filter(
+        (chapter: {
+          group_id: number | null;
+          book_id: number;
+          chapter_id: number;
+        }) =>
+          chapter.group_id === groupId &&
+          challengeBooks.includes(chapter.book_id),
+      ).length;
+
+      countByGroup[groupId] = {
+        count: completedCount,
         total:
-          (challenge as Record<number, { total: number }>)[group_id]?.total ??
-          0,
+          (challenge as Record<number, { total: number }>)[groupId]?.total ?? 0,
       };
     }
 

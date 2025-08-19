@@ -1,6 +1,5 @@
 import { api, HydrateClient } from "~/trpc/server";
 import { Progress } from "./_components/progress";
-import { challenge } from "~/policy/challenge";
 
 export default async function ProgressPage() {
   const groups = await api.group.getGroups();

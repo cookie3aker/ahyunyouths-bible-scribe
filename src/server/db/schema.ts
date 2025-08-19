@@ -255,3 +255,33 @@ export const bibleScribeRelations = relations(bibleScribe, ({ one }) => ({
     references: [bibleVerse.verse_id],
   }),
 }));
+
+// Materialized View: Chapter별, Group별 완료된 Verse 수를 계산
+export const chapterGroupScribeCount = pgMaterializedView(
+  "chapter_group_scribe_count",
+).as((qb) =>
+  qb
+    .select({
+      chapter_id: bibleChapter.chapter_id,
+      book_id: bibleChapter.book_id,
+      group_id: bibleScribe.group_id,
+      verse_count: sql<number>`COUNT(DISTINCT ${bibleScribe.verse_id})`.as(
+        "scribe_count",
+      ),
+      total_verse_count: sql<number>`(
+          SELECT COUNT(*) 
+          FROM ${bibleVerse} v 
+          WHERE v.chapter_id = ${bibleChapter.chapter_id}
+        )`.as("total_verse_count"),
+    })
+    .from(bibleChapter)
+    .leftJoin(
+      bibleScribe,
+      sql`${bibleChapter.chapter_id} = ${bibleScribe.chapter_id}`,
+    )
+    .groupBy(
+      bibleChapter.chapter_id,
+      bibleChapter.book_id,
+      bibleScribe.group_id,
+    ),
+);

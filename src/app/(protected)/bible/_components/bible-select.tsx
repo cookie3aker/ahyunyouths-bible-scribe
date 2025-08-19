@@ -25,13 +25,11 @@ export function BibleSelect({ groupId, bookId, chapterId }: BibleSelectProps) {
     chapterId ? Number(chapterId) : null,
   );
 
-  // TODO - 테스트를 위한 임시 주석 처리
-  // const myGroupBibles = bibles.filter((b) =>
-  //   challenge[Number(groupId) as keyof typeof challenge]?.includes(
-  //     b.book_id || 0,
-  //   ),
-  // );
-  const myGroupBibles = bibles;
+  const myGroupBibles = bibles.filter((b) =>
+    challenge[Number(groupId) as keyof typeof challenge].books?.includes(
+      b.book_id || 0,
+    ),
+  );
 
   const selectedBook =
     myGroupBibles?.find((b) => b.book_id === selectedBookId) ?? null;
