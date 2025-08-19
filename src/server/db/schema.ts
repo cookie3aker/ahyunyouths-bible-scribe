@@ -269,6 +269,40 @@ export const bibleScribe = createTable(
   ],
 );
 
+export const postLikes = createTable(
+  "post_like",
+  (d) => ({
+    userId: d
+      .varchar({ length: 255 })
+      .notNull()
+      .references(() => users.id),
+    postId: d
+      .integer()
+      .notNull()
+      .references(() => posts.id),
+    createdAt: d
+      .timestamp({ withTimezone: true })
+      .default(sql`CURRENT_TIMESTAMP`)
+      .notNull(),
+  }),
+  (t) => [
+    primaryKey({ columns: [t.userId, t.postId] }),
+    index("post_like_user_idx").on(t.userId),
+    index("post_like_post_idx").on(t.postId),
+  ],
+);
+
+export const postLikesRelations = relations(postLikes, ({ one }) => ({
+  user: one(users, {
+    fields: [postLikes.userId],
+    references: [users.id],
+  }),
+  post: one(posts, {
+    fields: [postLikes.postId],
+    references: [posts.id],
+  }),
+}));
+
 export const bibleScribeRelations = relations(bibleScribe, ({ one }) => ({
   user: one(users, {
     fields: [bibleScribe.user_id],

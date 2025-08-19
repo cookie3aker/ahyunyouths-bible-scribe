@@ -4,6 +4,7 @@ import { api } from "~/trpc/server";
 
 export default async function CommunityPage() {
   const posts = await api.post.getAllPosts();
+  console.log(posts);
 
   return (
     <main className="flex-grow px-[20px] pt-[36px] pb-[130px]">
@@ -26,7 +27,7 @@ export default async function CommunityPage() {
         </div>
 
         <div className="flex w-full flex-col items-center justify-center gap-4">
-          {posts.map((it) => (
+          {posts?.map((it) => (
             <Post
               key={it.id}
               id={it.id}
@@ -36,6 +37,7 @@ export default async function CommunityPage() {
               chapterNumber={it.chapter.chapter_number}
               verseNumber={it.verse.verse_number}
               likes={it.likes}
+              hasLiked={it.hasLiked}
               // createdAt={it.createdAt.toISOString()}
               // updatedAt={it.updatedAt.toISOString()}
             />

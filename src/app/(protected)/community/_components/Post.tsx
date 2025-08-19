@@ -13,6 +13,7 @@ interface PostProps {
   chapterNumber: number;
   verseNumber: number;
   likes: number;
+  hasLiked: boolean;
   createdAt?: string; // Optional, if you want to display the creation date
   updatedAt?: string; // Optional, if you want to display the last update date
 }
@@ -25,17 +26,19 @@ export function Post({
   chapterNumber,
   verseNumber,
   likes,
+  hasLiked,
 }: PostProps) {
   const [likeCount, setLikeCount] = useState(likes);
+  const [hasLikedState, setHasLikedState] = useState(hasLiked);
 
-  const { mutateAsync } = api.post.like.useMutation();
+  const { mutate: like } = api.post.like.useMutation();
 
   const onClickLike = async () => {
-    // TODO - 한 사람이 한 게시글에 대해 한 번만 좋아요를 누를 수 있도록 처리
-    // 현재 유저가 해당 게시글에 대해 좋아요를 누른 적이 있는지 체크
-
-    await mutateAsync({ postId: id });
-    setLikeCount((prev) => prev + 1);
+    if (!hasLikedState) {
+      like({ postId: id });
+      setLikeCount((prev) => prev + 1);
+      setHasLikedState(true);
+    }
   };
 
   return (
@@ -49,9 +52,17 @@ export function Post({
         </div>
         <p className="flex-1 text-[15px] font-bold">{content}</p>
       </div>
-      <div className="flex items-center gap-1">
-        <LikeSmallIcon />{" "}
-        <span className="text-[14px] text-[#969492]">{likeCount}</span>
+      <div>
+        <button
+          className="flex items-center gap-1"
+          disabled={hasLikedState}
+          onClick={onClickLike}
+        >
+          <LikeSmallIcon hasLiked={hasLikedState} />{" "}
+          <span className="pt-[2px] text-[14px] font-bold text-[#969492]">
+            {likeCount}
+          </span>
+        </button>
       </div>
     </div>
   );

@@ -1,8 +1,8 @@
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import { posts } from "~/server/db/schema";
+import { postLikes, posts } from "~/server/db/schema";
 
 export const postRouter = createTRPCRouter({
   create: protectedProcedure
@@ -31,14 +31,36 @@ export const postRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await ctx.db
-        .update(posts)
-        .set({ likes: sql`${posts.likes} + 1` })
-        .where(eq(posts.id, input.postId));
+      // Check if the user has already liked the post
+      const existingLike = await ctx.db
+        .select()
+        .from(postLikes)
+        .where(
+          and(
+            eq(postLikes.userId, ctx.session.user.id),
+            eq(postLikes.postId, input.postId),
+          ),
+        )
+        .limit(1);
+
+      // If the user hasn't liked the post yet
+      if (existingLike.length === 0) {
+        // Insert into postLikes table
+        await ctx.db.insert(postLikes).values({
+          userId: ctx.session.user.id,
+          postId: input.postId,
+        });
+
+        // Increment the likes count
+        await ctx.db
+          .update(posts)
+          .set({ likes: sql`${posts.likes} + 1` })
+          .where(eq(posts.id, input.postId));
+      }
     }),
 
   getAllPosts: protectedProcedure.query(async ({ ctx }) => {
-    const post = await ctx.db.query.posts.findMany({
+    const posts = await ctx.db.query.posts.findMany({
       with: {
         createdBy: {
           columns: {
@@ -64,6 +86,23 @@ export const postRouter = createTRPCRouter({
       orderBy: (posts, { desc }) => [desc(posts.createdAt)],
     });
 
-    return post ?? null;
+    if (!posts) return null;
+
+    // Get all likes for the current user
+    const userLikes = await ctx.db
+      .select()
+      .from(postLikes)
+      .where(eq(postLikes.userId, ctx.session.user.id));
+
+    // Create a Set of post IDs that the user has liked for O(1) lookup
+    const userLikedPostIds = new Set(userLikes.map((like) => like.postId));
+
+    // Add hasLiked field to each post
+    const postsWithLikeStatus = posts.map((post) => ({
+      ...post,
+      hasLiked: userLikedPostIds.has(post.id),
+    }));
+
+    return postsWithLikeStatus;
   }),
 });
