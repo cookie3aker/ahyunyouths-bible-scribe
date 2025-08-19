@@ -1,45 +1,68 @@
-import { api } from "~/trpc/server";
-import { redirect } from "next/navigation";
+"use client";
 
-export default async function WritePage() {
-  // onSubmit handler for the form
-  const createPost = async (formData: FormData) => {
-    "use server";
+import { useState } from "react";
+import type { ChangeEvent } from "react";
 
-    await api.post.create({
-      content: formData.get("content") as string,
-    });
+export default function WritePage() {
+  const [content, setContent] = useState("");
 
-    redirect("/community");
+  const handleTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value;
+    if (newValue.length <= 500) {
+      setContent(newValue);
+      e.target.style.height = "auto";
+      e.target.style.height = `${Math.max(320, e.target.scrollHeight)}px`;
+    }
   };
 
   return (
-    <main className="flex-grow px-[20px] pt-[36px] pb-[130px]">
-      <div className="container flex flex-col items-center justify-center gap-12">
-        <h2>글쓰기</h2>
-        <form className="w-full max-w-md" action={createPost}>
-          <div className="mb-4">
-            <label
-              htmlFor="content"
-              className="block text-sm font-medium text-gray-700"
-            >
-              내용
-            </label>
-            <textarea
-              id="content"
-              name="content"
-              rows={4}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-              required
-            ></textarea>
-          </div>
-          <button
-            type="submit"
-            className="w-full rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:outline-none"
+    <main className="flex-grow px-[20px] pb-[130px]">
+      <div className="mb-[30px] w-full">
+        <p className="text-[18px] leading-[34px] font-bold">
+          필사를 하며 은혜를 받았던
+          <br />
+          본문을 고르고 나눔을 써줘!
+        </p>
+      </div>
+
+      <div>
+        <div className="flex h-[80px] justify-between rounded-t-[20px] bg-[#CFE3EF]/60 px-[24px] py-[16px]">
+          <span className="text-[12px] font-bold text-[#4B90BB]">
+            은혜 받았던 본문을 선택해줘
+          </span>
+          <svg
+            width="19"
+            height="11"
+            viewBox="0 0 19 11"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            작성하기
-          </button>
-        </form>
+            <path
+              d="M1.5 1L9.5 9L17.5 1"
+              stroke="#72A8CB"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+        </div>
+
+        <div className="relative mb-[36px]">
+          <textarea
+            rows={1}
+            value={content}
+            maxLength={500}
+            className="h-auto min-h-[120px] w-full -translate-y-[30px] resize-none rounded-[20px] bg-[#FFFFFF] px-[24px] py-[30px] outline-none"
+            onChange={handleTextAreaChange}
+            placeholder="..."
+          />
+          <div className="absolute right-1 bottom-2 text-sm text-[15px] font-bold">
+            {content.length}/500
+          </div>
+        </div>
+
+        <button className="h-[44px] w-full rounded-[20px] bg-[#CFE3EF] text-[14px] font-bold text-[#4B90BB]">
+          저장하기
+        </button>
       </div>
     </main>
   );
