@@ -27,9 +27,8 @@ export default async function ProgressPage() {
                   index={index}
                   groupName={group.group_name}
                   progress={
-                    ((scribeCountByGroup[group.group_id] ?? 0) /
-                      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-                      (challenge[group.group_id]?.chapterCount ?? 1)) *
+                    ((scribeCountByGroup[group.group_id]?.count ?? 0) /
+                      (scribeCountByGroup[group.group_id]?.total ?? 1)) *
                     100
                   }
                 />

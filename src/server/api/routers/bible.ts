@@ -11,6 +11,7 @@ import {
   bibleScribe,
   group,
 } from "~/server/db/schema";
+import { challenge } from "~/policy/challenge";
 
 export const bibleRouter = createTRPCRouter({
   getBooks: protectedProcedure.query(async ({ ctx }) => {
@@ -230,19 +231,34 @@ export const bibleRouter = createTRPCRouter({
       .groupBy(bibleScribe.group_id);
 
     // Convert to object with group_id as key
-    const countByGroup: Record<number, number> = {};
+    const countByGroup: Record<
+      number,
+      {
+        count: number;
+        total: number;
+      }
+    > = {};
 
     // 모든 group_id를 0으로 초기화
     for (const group of allGroups) {
-      countByGroup[group.group_id] = 0;
+      countByGroup[group.group_id] = {
+        count: 0,
+        total:
+          (challenge as Record<number, { total: number }>)[group.group_id]
+            ?.total ?? 0,
+      };
     }
 
     // count가 있는 group_id는 실제 count 값으로 업데이트
     for (const { group_id, count } of counts) {
-      countByGroup[group_id] = Number(count);
+      countByGroup[group_id] = {
+        count: Number(count),
+        total:
+          (challenge as Record<number, { total: number }>)[group_id]?.total ??
+          0,
+      };
     }
 
     return countByGroup;
   }),
-
 });
