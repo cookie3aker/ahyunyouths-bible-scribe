@@ -4,6 +4,12 @@ import { Progress } from "./_components/progress";
 export default async function ProgressPage() {
   const groups = await api.group.getGroups();
 
+  /**
+   * @ NOTE
+   * - 소그룹별 필사 집계. 완료 장수와 목표 장수를 반환한다.
+   * - 이 데이터를 이용해 공동체/소그룹별 필사 진행률을 계산한다.
+   * - 해당 집계 데이터는 Supabase cron job에서 5분 단위로 업데이트된다.
+   */
   const scribeCountByGroup = await api.bible.getScribeCountByGroup();
 
   return (
