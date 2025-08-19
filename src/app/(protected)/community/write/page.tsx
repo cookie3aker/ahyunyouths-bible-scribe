@@ -26,7 +26,7 @@ export default function WritePage() {
       </div>
 
       <div>
-        <div className="flex h-[80px] justify-between rounded-t-[20px] bg-[#CFE3EF]/60 px-[24px] py-[16px]">
+        <button className="flex h-[74px] w-full justify-between rounded-t-[20px] bg-[#CFE3EF]/60 px-[20px] py-[16px]">
           <span className="text-[12px] font-bold text-[#4B90BB]">
             은혜 받았던 본문을 선택해줘
           </span>
@@ -44,7 +44,7 @@ export default function WritePage() {
               stroke-linecap="round"
             />
           </svg>
-        </div>
+        </button>
 
         <div className="relative mb-[36px]">
           <textarea
