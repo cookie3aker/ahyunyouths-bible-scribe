@@ -24,6 +24,8 @@ export default function BottomSheet({
   onSelect,
 }: BottomSheetProps) {
   const sheetRef = useRef<HTMLDivElement>(null);
+  const selectRef = useRef<HTMLDivElement>(null);
+
   const [step, setStep] = useState<"book" | "chapter" | "verse">("book");
   const [selection, setSelection] = useState<BibleSelection>({});
 
@@ -82,7 +84,7 @@ export default function BottomSheet({
               `${selection.bookName} ${selection.chapterNumber}장의 어떤 절이 흥미로웠어?`}
           </h3>
 
-          <div className="max-h-[60vh] overflow-y-auto">
+          <div ref={selectRef} className="max-h-[60vh] overflow-y-auto">
             {step === "book" && bibles && (
               <div className="grid grid-cols-1 gap-2">
                 {Object.values(bibles).map((book) => (
@@ -95,6 +97,7 @@ export default function BottomSheet({
                         bookName: book.book_name,
                       });
                       setStep("chapter");
+                      selectRef.current?.scrollTo(0, 0);
                     }}
                   >
                     {book.book_name}
@@ -116,6 +119,7 @@ export default function BottomSheet({
                         chapterNumber: chapter.chapter_number,
                       });
                       setStep("verse");
+                      selectRef.current?.scrollTo(0, 0);
                     }}
                   >
                     {chapter.chapter_number}장
