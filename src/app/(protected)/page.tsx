@@ -2,6 +2,7 @@ import { api, HydrateClient } from "~/trpc/server";
 import { auth } from "~/server/auth";
 import { redirect } from "next/navigation";
 import { SelectGroup } from "./_components/select-group";
+import { LoginModal } from "./_components/login-modal";
 
 export default async function Home() {
   const session = await auth();
@@ -31,6 +32,8 @@ export default async function Home() {
           <SelectGroup groups={groups} />
         </div>
       </div>
+
+      {!session && <LoginModal />}
     </HydrateClient>
   );
 }

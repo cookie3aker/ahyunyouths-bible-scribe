@@ -6,8 +6,8 @@ export function middleware(req: NextRequest) {
     req.cookies.has("authjs.session-token") ||
     req.cookies.has("__Secure-authjs.session-token");
 
-  if (!hasSessionTokenCookie && req.nextUrl.pathname !== "/login") {
-    const loginUrl = new URL("/login", req.nextUrl.origin);
+  if (!hasSessionTokenCookie && req.nextUrl.pathname !== "/") {
+    const loginUrl = new URL("/", req.nextUrl.origin);
     return Response.redirect(loginUrl);
   }
 }
