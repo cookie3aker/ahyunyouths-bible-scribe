@@ -72,7 +72,7 @@ export default function MyPage() {
           className={`h-[44px] w-full rounded-[20px] text-[14px] font-bold ${
             !name || !groupId || overLimit
               ? "bg-[#E5EEF3] text-[#9FBFD1]"
-              : "bg-[#CFE3EF] text-[#4B90BB]"
+              : "bg-[#8CBEDE] text-[#FFFFFF]"
           }`}
         >
           저장하기
