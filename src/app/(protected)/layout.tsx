@@ -1,3 +1,4 @@
+import { Toaster } from "react-hot-toast";
 import { BottomNavigation } from "../_components/bottom-navigation";
 import { Header } from "../_components/header";
 
@@ -19,6 +20,8 @@ export default async function RootLayout({
           <BottomNavigation />
         </footer>
       </div>
+
+      <Toaster />
     </div>
   );
 }

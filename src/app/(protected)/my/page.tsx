@@ -2,6 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { api } from "~/trpc/react";
 
 export default function MyPage() {
@@ -27,6 +28,7 @@ export default function MyPage() {
   const handleClickSave = async () => {
     await updateUser({ name, groupId });
     setEditCount((prev) => prev + 1);
+    toast.success("저장 완료!");
   };
 
   return (

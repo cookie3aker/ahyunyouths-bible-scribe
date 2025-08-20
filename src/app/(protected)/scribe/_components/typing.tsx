@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import toast from "react-hot-toast";
 import { api } from "~/trpc/react";
 
 interface TypingProps {
@@ -55,7 +56,7 @@ export function Typing({
     }
 
     if (
-      !isComposing &&
+      // !isComposing &&
       currentInput.length === targetText.length &&
       currentInput === targetText
     ) {
@@ -68,7 +69,7 @@ export function Typing({
         verse_id: verseId,
       })
         .then(() => {
-          console.log("Scribe saved successfully");
+          toast.success("필사 완료!", { duration: 2000 });
         })
         .catch((error) => {
           console.error("Failed to save scribe:", error);
