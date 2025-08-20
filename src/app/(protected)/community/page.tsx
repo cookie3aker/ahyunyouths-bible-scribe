@@ -4,7 +4,6 @@ import { api } from "~/trpc/server";
 
 export default async function CommunityPage() {
   const posts = await api.post.getAllPosts();
-  console.log(posts);
 
   return (
     <main className="flex-grow px-[20px] pt-[36px] pb-[130px]">
