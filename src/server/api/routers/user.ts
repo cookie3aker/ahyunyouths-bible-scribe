@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
@@ -23,7 +23,10 @@ export const userRouter = createTRPCRouter({
 
       await ctx.db
         .update(users)
-        .set(updateData)
+        .set({
+          ...updateData,
+          editCount: sql`${users.editCount} + 1`, // Increment edit count
+        })
         .where(eq(users.id, ctx.session.user.id));
 
       return { success: true };

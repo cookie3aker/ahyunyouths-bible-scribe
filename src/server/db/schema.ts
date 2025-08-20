@@ -86,6 +86,7 @@ export const users = createTable("user", (d) => ({
     .default(sql`CURRENT_TIMESTAMP`),
   image: d.varchar({ length: 255 }),
   groupId: d.integer().references(() => group.group_id),
+  editCount: d.integer().notNull().default(0),
 }));
 
 export const usersRelations = relations(users, ({ many }) => ({

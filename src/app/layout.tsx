@@ -3,6 +3,7 @@ import "~/styles/globals.css";
 import { type Metadata } from "next";
 
 import { TRPCReactProvider } from "~/trpc/react";
+import { SessionProvider } from "next-auth/react";
 
 export const metadata: Metadata = {
   title: "아현젊은이교회 성경필사",
@@ -22,9 +23,11 @@ export default async function RootLayout({
   return (
     <html lang="en" className={`nanumsquare`}>
       <body>
-        <TRPCReactProvider>
-          <div className="mx-auto min-h-screen max-w-[768px]">{children}</div>
-        </TRPCReactProvider>
+        <SessionProvider>
+          <TRPCReactProvider>
+            <div className="mx-auto min-h-screen max-w-[768px]">{children}</div>
+          </TRPCReactProvider>
+        </SessionProvider>
       </body>
     </html>
   );
