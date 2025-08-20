@@ -50,7 +50,9 @@ export function Post({
           </span>
           <span className="text-[12px] text-[#4B4B4A]">{author}</span>
         </div>
-        <p className="flex-1 text-[15px] font-bold">{content}</p>
+        <p className="flex-1 text-[15px] font-bold whitespace-pre-wrap">
+          {content}
+        </p>
       </div>
       <div>
         <button
