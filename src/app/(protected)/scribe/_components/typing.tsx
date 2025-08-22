@@ -62,7 +62,7 @@ export function Typing({
 
   const onSuccessScribe = useCallback(() => {
     if (nextVerseId) {
-      toast.success(`필사 완료! 다음 절로 이동합니다.`);
+      toast.success(`필사 완료! 다음 절로 이동할게!`);
       setTimeout(() => {
         router.replace(
           `/scribe?book_id=${bookId}&chapter_id=${chapterId}&verse_id=${nextVerseId}`,
