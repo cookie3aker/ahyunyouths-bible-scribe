@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { challenge } from "~/policy/challenge";
 import { api } from "~/trpc/react";
@@ -38,14 +39,27 @@ export function BibleSelect({ groupId, bookId, chapterId }: BibleSelectProps) {
     chapters.find((ch) => ch.chapter_id === selectedChapterId) ?? null;
   const verses = selectedChapter?.verses ?? [];
 
+  const handleClickBookBreadCrumb = () => {
+    setSelectedBookId(null);
+    setSelectedChapterId(null);
+  };
+
+  const handleClickChapterBreadCrumb = () => {
+    setSelectedChapterId(null);
+  };
+
   return (
     <div>
       <div className="mb-[16px] text-[17px] font-bold text-[#75B2DA]">
-        {selectedBook?.book_name && <span>{selectedBook?.book_name}</span>}
+        <button onClick={handleClickBookBreadCrumb}>
+          {selectedBook?.book_name && <span>{selectedBook?.book_name}</span>}
+        </button>
         {selectedChapter?.chapter_number && (
           <span>
             {` > `}
-            {selectedChapter?.chapter_number}장
+            <button onClick={handleClickChapterBreadCrumb}>
+              {selectedChapter?.chapter_number}장
+            </button>
           </span>
         )}
       </div>
