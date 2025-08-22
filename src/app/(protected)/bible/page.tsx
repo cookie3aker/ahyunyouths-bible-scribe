@@ -33,7 +33,7 @@ export default async function BiblePage({
           <div className="text-[22px] font-bold">
             {group?.group_name} 소그룹
             <br />
-            오늘의 필사도 화이팅!
+            말씀안에서 하나되는 시간
           </div>
 
           <div className="text-[15px] font-bold opacity-60">
