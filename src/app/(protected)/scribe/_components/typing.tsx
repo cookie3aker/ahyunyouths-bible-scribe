@@ -79,10 +79,14 @@ export function Typing({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+
+    // 연속된 스페이스 방지: 두 번 이상 연속된 스페이스를 하나로 제한
+    const filteredValue = value.replace(/  +/g, " ");
+
     // 샘플 텍스트 길이를 초과하지 않도록 제한
-    if (value.length <= targetText.length) {
-      setCurrentInput(value);
-      setCurrentPosition(value.length);
+    if (filteredValue.length <= targetText.length) {
+      setCurrentInput(filteredValue);
+      setCurrentPosition(filteredValue.length);
     }
   };
 
