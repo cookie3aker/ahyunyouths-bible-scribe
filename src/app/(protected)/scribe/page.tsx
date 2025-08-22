@@ -31,6 +31,10 @@ export default async function ScribePage({
     verse_id: Number(verseId),
   });
 
+  const verseList = await api.bible.getVerseIdsByChapterId({
+    chapter_id: Number(chapterId),
+  });
+
   return (
     <HydrateClient>
       <main className="flex-grow rounded-t-[24px] bg-[url('/bg-ivory.jpg')] bg-cover bg-center px-[20px] pt-[36px] pb-[130px]">
@@ -55,6 +59,7 @@ export default async function ScribePage({
             bookId={Number(bookId)}
             chapterId={Number(chapterId)}
             verseId={Number(verseId)}
+            verseList={verseList}
           />
         </div>
       </main>

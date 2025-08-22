@@ -1,6 +1,13 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useRouter } from "next/navigation";
+import {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useLayoutEffect,
+} from "react";
 import toast from "react-hot-toast";
 import { api } from "~/trpc/react";
 
@@ -11,6 +18,7 @@ interface TypingProps {
   bookId: number;
   chapterId: number;
   verseId: number;
+  verseList: number[];
 }
 
 export function Typing({
@@ -20,7 +28,13 @@ export function Typing({
   bookId,
   chapterId,
   verseId,
+  verseList,
 }: TypingProps) {
+  const router = useRouter();
+
+  const currentVerseIndex = verseList.findIndex((it) => it === Number(verseId));
+  const nextVerseId = verseList[currentVerseIndex + 1];
+
   const [currentInput, setCurrentInput] = useState("");
   const [currentPosition, setCurrentPosition] = useState(0);
   const [isComposing, setIsComposing] = useState(false);
@@ -39,12 +53,40 @@ export function Typing({
 
   const { mutateAsync: saveScribe } = api.bible.saveScribe.useMutation();
 
+  const resetStates = () => {
+    setCurrentInput("");
+    setCurrentPosition(0);
+    setIsComposing(false);
+    setCanEdit(true);
+  };
+
+  const onSuccessScribe = useCallback(() => {
+    if (nextVerseId) {
+      toast.success(`필사 완료! 다음 절로 이동합니다.`);
+      setTimeout(() => {
+        router.replace(
+          `/scribe?book_id=${bookId}&chapter_id=${chapterId}&verse_id=${nextVerseId}`,
+        );
+      }, 1000);
+    } else {
+      toast.success(`마지막 절 필사 완료!`);
+      setTimeout(() => {
+        router.replace(
+          `/bible?group_id=${groupId}&book_id=${bookId}&chapter_id=${chapterId}`,
+        );
+      }, 1000);
+    }
+  }, [bookId, chapterId, groupId, nextVerseId, router]);
+
   useEffect(() => {
     // 컴포넌트 마운트 시 숨겨진 input에 포커스
-    if (hiddenInputRef.current) {
-      hiddenInputRef.current.focus();
-    }
-  }, []);
+    resetStates();
+    setTimeout(() => {
+      if (hiddenInputRef.current) {
+        hiddenInputRef.current.focus();
+      }
+    }, 100);
+  }, [targetText]);
 
   useEffect(() => {
     // 모든 글자가 일치하는지 확인 (조합 중이 아닐 때만)
@@ -69,9 +111,7 @@ export function Typing({
         chapter_id: chapterId,
         verse_id: verseId,
       })
-        .then(() => {
-          toast.success("필사 완료!", { duration: 2000 });
-        })
+        .then(onSuccessScribe)
         .catch((error) => {
           console.error("Failed to save scribe:", error);
         });
@@ -87,6 +127,7 @@ export function Typing({
     chapterId,
     verseId,
     saveScribe,
+    onSuccessScribe,
   ]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -270,4 +270,20 @@ export const bibleRouter = createTRPCRouter({
 
     return countByGroup;
   }),
+
+  // chapter_id로 해당 챕터의 모든 verse_id 리스트 반환
+  getVerseIdsByChapterId: protectedProcedure
+    .input(
+      z.object({
+        chapter_id: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const verses = await ctx.db.query.bibleVerse.findMany({
+        where: (bv, { eq }) => eq(bv.chapter_id, input.chapter_id),
+        columns: { verse_id: true },
+        orderBy: (bv, { asc }) => [asc(bv.verse_number)],
+      });
+      return verses.map((v) => v.verse_id);
+    }),
 });
