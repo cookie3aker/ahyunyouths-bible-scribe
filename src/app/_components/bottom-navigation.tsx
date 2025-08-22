@@ -15,7 +15,7 @@ export function BottomNavigation() {
         <div>모으기</div>
       </Link>
       <Link
-        href="/"
+        href="/bible"
         aria-label="채우기"
         className="flex scale-64 flex-col items-center justify-center gap-2 text-[16px] font-bold text-[#4faeed]"
       >

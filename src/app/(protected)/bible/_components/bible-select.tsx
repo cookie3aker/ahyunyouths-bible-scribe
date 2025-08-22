@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState } from "react";
 import { challenge } from "~/policy/challenge";
 import { api } from "~/trpc/react";
@@ -12,8 +11,13 @@ interface BibleSelectProps {
 }
 
 export function BibleSelect({ groupId, bookId, chapterId }: BibleSelectProps) {
-  const [bibles] = api.bible.getBibleStatistics.useSuspenseQuery();
-  const [scribeByGroup] = api.bible.getScribeByGroup.useSuspenseQuery({
+  const targetBookIds =
+    challenge[Number(groupId) as keyof typeof challenge].books;
+
+  const { data: bibles = [] } = api.bible.getBibleStatistics.useQuery({
+    book_ids: targetBookIds,
+  });
+  const { data: scribeByGroup = {} } = api.bible.getScribeByGroup.useQuery({
     group_id: Number(groupId),
   });
 
@@ -26,14 +30,8 @@ export function BibleSelect({ groupId, bookId, chapterId }: BibleSelectProps) {
     chapterId ? Number(chapterId) : null,
   );
 
-  const myGroupBibles = bibles.filter((b) =>
-    challenge[Number(groupId) as keyof typeof challenge].books?.includes(
-      b.book_id || 0,
-    ),
-  );
-
   const selectedBook =
-    myGroupBibles?.find((b) => b.book_id === selectedBookId) ?? null;
+    bibles?.find((b) => b.book_id === selectedBookId) ?? null;
   const chapters = selectedBook?.chaptersWithVerses ?? [];
   const selectedChapter =
     chapters.find((ch) => ch.chapter_id === selectedChapterId) ?? null;
@@ -66,7 +64,7 @@ export function BibleSelect({ groupId, bookId, chapterId }: BibleSelectProps) {
 
       {!selectedBook && (
         <div className="grid grid-cols-2 gap-3">
-          {myGroupBibles.map((book) => (
+          {bibles.map((book) => (
             <button
               key={book.book_id}
               onClick={() => {

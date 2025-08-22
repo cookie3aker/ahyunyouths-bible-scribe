@@ -1,15 +1,11 @@
 import { z } from "zod";
-import { sql } from "drizzle-orm";
+import { sql, inArray } from "drizzle-orm";
 
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import {
-  bibleBook,
   bookChapterCount,
   chapterVerseCount,
-  bibleChapter,
-  bibleVerse,
   bibleScribe,
-  group,
   chapterGroupScribeCount,
 } from "~/server/db/schema";
 import { challenge } from "~/policy/challenge";
@@ -23,60 +19,98 @@ export const bibleRouter = createTRPCRouter({
   }),
 
   // 모든 성경 통계 데이터를 한번에 조회 (도서별 챕터수 + 챕터별 벌스수 + 벌스 정보)
-  getBibleStatistics: protectedProcedure.query(async ({ ctx }) => {
-    // 도서별 총 챕터수 조회
-    const booksWithChapterCount = await ctx.db
-      .select()
-      .from(bookChapterCount)
-      .orderBy(bookChapterCount.book_order);
+  // optional: 특정 book_ids만 필터링하여 반환
+  getBibleStatistics: protectedProcedure
+    .input(
+      z
+        .object({
+          book_ids: z.array(z.number()).optional(),
+        })
+        .optional(),
+    )
+    .query(async ({ ctx, input }) => {
+      const filterBookIds = input?.book_ids?.length
+        ? new Set(input.book_ids)
+        : null;
+      // 빈 배열이 들어온 경우 바로 반환
+      if (input?.book_ids?.length === 0) return [];
 
-    // 모든 챕터별 총 벌스수 조회
-    const allChaptersWithVerseCount = await ctx.db
-      .select()
-      .from(chapterVerseCount)
-      .orderBy(chapterVerseCount.book_id, chapterVerseCount.chapter_number);
+      // 도서별 총 챕터수 조회 (필터 적용)
+      const booksWithChapterCount = await ctx.db
+        .select()
+        .from(bookChapterCount)
+        .where(
+          filterBookIds
+            ? inArray(bookChapterCount.book_id, Array.from(filterBookIds))
+            : undefined,
+        )
+        .orderBy(bookChapterCount.book_order);
 
-    // 모든 벌스 정보 조회
-    const allVerses = await ctx.db.query.bibleVerse.findMany({
-      columns: {
-        verse_text: false,
-      },
-      orderBy: (verse, { asc }) => [
-        asc(verse.chapter_id),
-        asc(verse.verse_number),
-      ],
-    });
+      // 모든(or filtered) 챕터별 총 벌스수 조회
+      const allChaptersWithVerseCount = await ctx.db
+        .select()
+        .from(chapterVerseCount)
+        .where(
+          filterBookIds
+            ? inArray(chapterVerseCount.book_id, Array.from(filterBookIds))
+            : undefined,
+        )
+        .orderBy(chapterVerseCount.book_id, chapterVerseCount.chapter_number);
 
-    // chapter_id별로 벌스 그룹핑
-    const versesByChapterId: Record<string, typeof allVerses> = {};
-    for (const verse of allVerses) {
-      const chapterId = verse.chapter_id;
-      versesByChapterId[chapterId] ??= [];
-      versesByChapterId[chapterId].push(verse);
-    }
+      // 필요한 챕터 id 집합 (필터가 있는 경우 제한된 범위만)
+      const neededChapterIds = new Set(
+        allChaptersWithVerseCount.map((c) => c.chapter_id),
+      );
 
-    // 각 챕터에 벌스 정보 추가
-    const chaptersWithVerses = allChaptersWithVerseCount.map((chapter) => ({
-      ...chapter,
-      verses: versesByChapterId[chapter.chapter_id] ?? [],
-    }));
+      // 벌스 정보 (필터 있으면 관련 챕터만 조회)
+      const allVerses = await ctx.db.query.bibleVerse.findMany({
+        where: (bv, { inArray: inArr }) =>
+          neededChapterIds.size
+            ? inArr(bv.chapter_id, Array.from(neededChapterIds))
+            : undefined,
+        columns: { verse_text: false },
+        orderBy: (verse, { asc }) => [
+          asc(verse.chapter_id),
+          asc(verse.verse_number),
+        ],
+      });
 
-    // book_id별로 챕터 그룹핑
-    const chaptersByBookId: Record<string, typeof chaptersWithVerses> = {};
-    for (const chapter of chaptersWithVerses) {
-      const bookId = chapter.book_id;
-      chaptersByBookId[bookId] ??= [];
-      chaptersByBookId[bookId].push(chapter);
-    }
+      // chapter_id별로 벌스 그룹핑
+      const versesByChapterId: Record<string, typeof allVerses> = {};
+      for (const verse of allVerses) {
+        const chapterId = verse.chapter_id;
+        versesByChapterId[chapterId] ??= [];
+        versesByChapterId[chapterId].push(verse);
+      }
 
-    // 각 book에 chaptersWithVerseCount 대신 chaptersWithVerses 추가
-    const booksWithChapters = booksWithChapterCount.map((book) => ({
-      ...book,
-      chaptersWithVerses: chaptersByBookId[book.book_id] ?? [],
-    }));
+      // 각 챕터에 벌스 정보 추가
+      const chaptersWithVerses = allChaptersWithVerseCount.map((chapter) => ({
+        ...chapter,
+        verses: versesByChapterId[chapter.chapter_id] ?? [],
+      }));
 
-    return booksWithChapters;
-  }),
+      // book_id별로 챕터 그룹핑
+      const chaptersByBookId: Record<string, typeof chaptersWithVerses> = {};
+      for (const chapter of chaptersWithVerses) {
+        const bookId = chapter.book_id;
+        chaptersByBookId[bookId] ??= [];
+        chaptersByBookId[bookId].push(chapter);
+      }
+
+      // 각 book에 chaptersWithVerseCount 대신 chaptersWithVerses 추가
+      let booksWithChapters = booksWithChapterCount.map((book) => ({
+        ...book,
+        chaptersWithVerses: chaptersByBookId[book.book_id] ?? [],
+      }));
+
+      // 필터 적용 (optional)
+      if (filterBookIds) {
+        booksWithChapters = booksWithChapters.filter((b) =>
+          filterBookIds.has(b.book_id),
+        );
+      }
+      return booksWithChapters;
+    }),
 
   // book_id, chapter_id, verse_id로 특정 성경 구절 조회 (bibleBook, bibleChapter 조인)
   getVerse: protectedProcedure
