@@ -4,7 +4,7 @@ export async function Header() {
   return (
     <ul className="flex w-full items-center justify-end gap-[20px]">
       <li className="text-[14px] font-bold text-[#FFF8F2]">
-        아현젊은이교회 성경 필사
+        성경 정주행 - 필사편
       </li>
       <li className="flex h-[31px] w-[31px] items-center justify-center rounded-full bg-[#B5D4E8] pt-[1px] text-[14px] font-bold">
         <Link href="/my">MY</Link>
