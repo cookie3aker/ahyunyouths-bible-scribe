@@ -6,15 +6,15 @@ export function LoginModal() {
   return (
     <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="mx-4 w-full max-w-[768px] rounded-[20px] bg-white px-[16px] py-[24px]">
-        <div className="flex h-[262px] flex-col justify-start gap-[24px]">
-          <div className="flex w-full items-center justify-between">
-            <h2 className="mb-4 text-xl font-bold">로그인</h2> <div></div>
+        <div className="flex h-[220px] flex-col justify-start gap-[16px]">
+          <div className="flex w-full items-center justify-center">
+            <h2 className="mb-[4px] text-xl font-bold">로그인</h2> <div></div>
           </div>
-          <p className="text-[16px] font-bold">
+          <p className="text-center text-[16px] font-bold text-[#A1A1A1]">
             성경 필사를 하기 위해 로그인이 필요해!
           </p>
           <button
-            className="flex cursor-pointer items-center justify-center gap-2 rounded-md bg-white p-4 text-black shadow-md hover:bg-gray-100"
+            className="mb-[8px] flex cursor-pointer items-center justify-center gap-2 rounded-[20px] bg-[#8CBEDE] p-4 text-[14px] text-[#FFFFFF] hover:bg-gray-100"
             onClick={() =>
               signIn("google", {
                 redirectTo: "/",
@@ -47,10 +47,11 @@ export function LoginModal() {
             </svg>
             <span className="text-[16px]">Google로 로그인 하기</span>
           </button>
-          <p className="text-[12px]">
-            * 로그인은 서비스를 처음 사용할 때만 필요해. 이후에는 자동 로그인이
-            될거야
-          </p>
+          <div className="text-center text-[12px] text-[#A1A1A1]">
+            <span>* 로그인은 서비스를 처음 사용할 때만 필요해</span>
+            <br />
+            <span>이후에는 자동 로그인이 될거야</span>
+          </div>
         </div>
       </div>
     </div>
