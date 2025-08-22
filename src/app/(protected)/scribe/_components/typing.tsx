@@ -27,6 +27,7 @@ export function Typing({
   const hiddenInputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [canEdit, setCanEdit] = useState(true);
+  // 조합 시작 시 이전 값 복구는 이제 필요 없으므로 스냅샷 제거
 
   const { data: subScribeData } = api.bible.getScribe.useQuery({
     user_id: userId,
@@ -75,19 +76,41 @@ export function Typing({
           console.error("Failed to save scribe:", error);
         });
     }
-  }, [currentInput, isComposing, subScribeData]);
+  }, [
+    currentInput,
+    isComposing,
+    subScribeData,
+    targetText,
+    userId,
+    groupId,
+    bookId,
+    chapterId,
+    verseId,
+    saveScribe,
+  ]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-
-    // 연속된 스페이스 방지: 두 번 이상 연속된 스페이스를 하나로 제한
-    const filteredValue = value.replace(/  +/g, " ");
-
-    // 샘플 텍스트 길이를 초과하지 않도록 제한
-    if (filteredValue.length <= targetText.length) {
-      setCurrentInput(filteredValue);
-      setCurrentPosition(filteredValue.length);
+    let value = e.target.value.replace(/  +/g, " ");
+    if (value.length > targetText.length) {
+      value = value.slice(0, targetText.length);
     }
+
+    // 첫 번째 불일치 지점 찾기
+    let mismatchIndex = -1;
+    for (let i = 0; i < value.length; i++) {
+      if (value[i] !== targetText[i]) {
+        mismatchIndex = i;
+        break;
+      }
+    }
+
+    if (mismatchIndex !== -1) {
+      // 불일치 이후(뒤쪽) 부분 모두 제거하여 다시 타이핑 유도
+      value = value.slice(0, mismatchIndex + 1);
+    }
+
+    setCurrentInput(value);
+    setCurrentPosition(value.length);
   };
 
   const handleCompositionStart = () => {
@@ -102,8 +125,21 @@ export function Typing({
     e: React.CompositionEvent<HTMLInputElement>,
   ) => {
     setIsComposing(false);
-    // 모바일 환경 대응: 조합이 끝난 후 실제 입력값을 동기화
-    const value = e.currentTarget.value;
+    let value = e.currentTarget.value.replace(/  +/g, " ");
+    if (value.length > targetText.length) {
+      value = value.slice(0, targetText.length);
+    }
+    // 조합 확정 후에도 동일한 불일치 처리
+    let mismatchIndex = -1;
+    for (let i = 0; i < value.length; i++) {
+      if (value[i] !== targetText[i]) {
+        mismatchIndex = i;
+        break;
+      }
+    }
+    if (mismatchIndex !== -1) {
+      value = value.slice(0, mismatchIndex + 1);
+    }
     setCurrentInput(value);
     setCurrentPosition(value.length);
   };
@@ -145,19 +181,13 @@ export function Typing({
       let textColor = "#302C27"; // 기본 회색
 
       if (index < currentInput.length) {
-        // 입력된 글자로 덮어쓰기
+        // 입력된 글자: 정답 여부에 따라 색상
         displayChar = currentInput[index] ?? "";
-
-        // 조합 중이 아닐 때만 색상 검증
         if (!isComposing || index < currentPosition) {
-          if (currentInput[index] === char) {
-            textColor = "text-blue-600"; // 일치하는 경우 색깔
-          } else {
-            textColor = "text-red-600"; // 불일치하는 경우 빨간색
-          }
+          textColor =
+            currentInput[index] === char ? "text-blue-600" : "text-red-600";
         } else {
-          // 조합 중인 글자는 중성 색상으로 표시
-          textColor = "text-blue-600";
+          textColor = "text-blue-600"; // 조합 중 임시
         }
       }
 
@@ -171,7 +201,7 @@ export function Typing({
       return (
         <span key={index} className={className}>
           {displayChar}
-          {/* 원본 글자를 배경으로 표시 (참고용) */}
+          {/* 틀린 글자일 경우 원본 글자를 흐리게 배경에 보여 사용자 수정 도움 */}
           {index < currentInput.length &&
             currentInput[index] !== char &&
             !isComposing && (
@@ -184,14 +214,7 @@ export function Typing({
     });
   };
 
-  const resetPractice = () => {
-    setCurrentInput("");
-    setCurrentPosition(0);
-    setIsComposing(false);
-    if (hiddenInputRef.current) {
-      hiddenInputRef.current.focus();
-    }
-  };
+  // resetPractice 기능이 필요하면 다시 활성화 가능
 
   return (
     <div className="w-full">
