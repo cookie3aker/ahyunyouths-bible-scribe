@@ -4,7 +4,6 @@ import { useState } from "react";
 import type { ChangeEvent } from "react";
 import BottomSheet, { type BibleSelection } from "./_components/bottom-sheet";
 import { api } from "~/trpc/react";
-import { useRouter } from "next/navigation";
 import { SuccessModal } from "./_components/success-modal";
 
 export default function WritePage() {

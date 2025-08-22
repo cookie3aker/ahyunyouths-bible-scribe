@@ -1,12 +1,13 @@
 "use client";
 
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { api } from "~/trpc/react";
 
 export default function MyPage() {
-  const { data: session } = useSession();
+  const { data: session, update: updateSession } = useSession();
   const { data: groups } = api.group.getGroups.useQuery();
 
   const [name, setName] = useState("");
@@ -27,6 +28,9 @@ export default function MyPage() {
 
   const handleClickSave = async () => {
     await updateUser({ name, groupId });
+    await updateSession({
+      user: { ...session?.user, name, groupId, editCount: editCount + 1 },
+    });
     setEditCount((prev) => prev + 1);
     toast.success("저장 완료!");
   };
