@@ -10,7 +10,7 @@ export function SuccessModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-9999 flex items-center justify-start bg-black/50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="mx-4 w-full max-w-[768px] rounded-[20px] bg-white">
         <div className="flex h-[190px] flex-col items-center justify-center">
           <h2 className="mb-[8px] text-[20px] font-bold">은혜 나눔 성공!</h2>
