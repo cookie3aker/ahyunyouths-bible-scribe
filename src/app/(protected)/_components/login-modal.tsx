@@ -4,7 +4,7 @@ import { signIn } from "next-auth/react";
 
 export function LoginModal() {
   return (
-    <div className="fixed inset-0 z-9999 flex items-center justify-start bg-black/50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-9999 flex items-center justify-center bg-black/50 backdrop-blur-sm">
       <div className="mx-4 w-full max-w-[768px] rounded-[20px] bg-white px-[16px] py-[24px]">
         <div className="flex h-[262px] flex-col justify-start gap-[24px]">
           <div className="flex w-full items-center justify-between">
