@@ -112,7 +112,20 @@ export default function WritePage() {
 
           <button
             onClick={handleClickSave}
-            className="h-[44px] w-full rounded-[20px] bg-[#8CBEDE] text-[14px] font-bold text-[#FFFFFF]"
+            disabled={
+              !selectedBible?.bookId ||
+              !selectedBible?.chapterId ||
+              !selectedBible?.verseId ||
+              !content
+            }
+            className={`h-[44px] w-full rounded-[20px] bg-[#8CBEDE] text-[14px] font-bold text-[#FFFFFF] ${
+              !selectedBible?.bookId ||
+              !selectedBible?.chapterId ||
+              !selectedBible?.verseId ||
+              !content
+                ? "bg-[#E5EEF3] text-[#9FBFD1]"
+                : "bg-[#8CBEDE] text-[#FFFFFF]"
+            }"`}
           >
             저장하기
           </button>
