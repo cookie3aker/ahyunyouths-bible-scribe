@@ -131,7 +131,7 @@ export function Typing({
   ]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/  +/g, " ");
+    let value = normalizePunctuation(e.target.value);
     if (value.length > targetText.length) {
       value = value.slice(0, targetText.length);
     }
@@ -166,7 +166,7 @@ export function Typing({
     e: React.CompositionEvent<HTMLInputElement>,
   ) => {
     setIsComposing(false);
-    let value = e.currentTarget.value.replace(/  +/g, " ");
+    let value = normalizePunctuation(e.currentTarget.value);
     if (value.length > targetText.length) {
       value = value.slice(0, targetText.length);
     }
@@ -287,4 +287,40 @@ export function Typing({
       </div>
     </div>
   );
+}
+
+// iPhone (iOS) 스마트/전각 구두점 및 특수문자 정규화
+// - 스마트 따옴표, 대시, 줄임표, 전각 마침표/쉼표 등 -> ASCII 기본형으로 변환
+// - 다중 공백을 단일 공백으로 축소 (기존 로직 유지)
+// - Zero-width / non-breaking space 제거
+function normalizePunctuation(input: string) {
+  let out = input.normalize("NFC");
+  const replacements: [RegExp, string][] = [
+    [/[ \u200B\u200C\u200D]/g, ""], // null & zero-width chars
+    [/\u00A0/g, " "], // non-breaking space -> space
+    [/[\u2018\u2019\u201A\u201B]/g, "'"], // single quotes
+    [/[\u201C\u201D\u201E\u201F]/g, '"'], // double quotes
+    [/[\u2013\u2014\u2212]/g, "-"], // en/em dash & minus
+    [/\u2026/g, "..."], // ellipsis
+    [/[\u3002]/g, "."], // full-width period
+    [/[\uFF0C]/g, ","], // full-width comma
+    [/[\uFF1B]/g, ";"], // full-width semicolon
+    [/[\uFF1A]/g, ":"], // full-width colon
+    [/[\uFF1F]/g, "?"], // full-width question
+    [/[\uFF01]/g, "!"], // full-width exclamation
+    [/[\uFF08]/g, "("], // full-width (
+    [/[\uFF09]/g, ")"], // full-width )
+    [/[\uFF0D]/g, "-"], // full-width hyphen-minus
+    [/[\uFF3B]/g, "["], // full-width [
+    [/[\uFF3D]/g, "]"], // full-width ]
+    [/[\uFF5B]/g, "{"], // full-width {
+    [/[\uFF5D]/g, "}"], // full-width }
+    [/[\u3000]/g, " "], // ideographic space -> space
+  ];
+  for (const [pattern, rep] of replacements) {
+    out = out.replace(pattern, rep);
+  }
+  // collapse multiple spaces
+  out = out.replace(/ {2,}/g, " ");
+  return out;
 }
