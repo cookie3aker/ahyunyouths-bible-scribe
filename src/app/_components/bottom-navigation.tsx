@@ -9,7 +9,7 @@ export function BottomNavigation() {
       <Link
         href="/progress"
         aria-label="모으기"
-        className="flex flex-col items-center justify-center gap-2 text-[12px] font-bold text-[#302C27]"
+        className="flex scale-60 flex-col items-center justify-center gap-2 text-[14px] font-bold text-[#302C27]"
       >
         <ChurchIcon />
         <div>모으기</div>
@@ -17,7 +17,7 @@ export function BottomNavigation() {
       <Link
         href="/"
         aria-label="채우기"
-        className="flex flex-col items-center justify-center gap-2 text-[12px] font-bold text-[#302C27]"
+        className="flex scale-60 flex-col items-center justify-center gap-2 text-[14px] font-bold text-[#302C27]"
       >
         <BookIcon />
         <div>채우기</div>
@@ -25,7 +25,7 @@ export function BottomNavigation() {
       <Link
         href="/community"
         aria-label="나누기"
-        className="flex flex-col items-center justify-center gap-2 text-[12px] font-bold text-[#302C27]"
+        className="flex scale-60 flex-col items-center justify-center gap-2 text-[14px] font-bold text-[#302C27]"
       >
         <HeartIcon />
         <div>나누기</div>

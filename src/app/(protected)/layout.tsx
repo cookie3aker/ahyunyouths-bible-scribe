@@ -16,7 +16,7 @@ export default async function RootLayout({
           <Header />
         </header>
         {children}
-        <footer className="fixed bottom-0 left-1/2 flex h-[106px] w-full max-w-[768px] -translate-x-1/2 bg-white pt-[14.5px] pb-[28.5px]">
+        <footer className="fixed bottom-0 left-1/2 flex h-[50px] w-full max-w-[768px] -translate-x-1/2 bg-[#CFE3EF] py-[8px] shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
           <BottomNavigation />
         </footer>
       </div>
