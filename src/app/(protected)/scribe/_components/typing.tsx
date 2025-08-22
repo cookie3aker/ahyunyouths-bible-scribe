@@ -258,7 +258,7 @@ export function Typing({
   // resetPractice 기능이 필요하면 다시 활성화 가능
 
   return (
-    <div className="w-full">
+    <div className="font-nanum-neo-bold w-full">
       {/* 숨겨진 입력 영역 */}
       <input
         ref={hiddenInputRef}
