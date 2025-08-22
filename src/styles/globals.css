@@ -85,6 +85,14 @@ body {
   color: #302c27;
 }
 
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
 .font-nanum-neo-bold {
   font-family: "NanumSquareNeoBold", sans-serif;
 }

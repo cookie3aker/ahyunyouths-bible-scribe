@@ -48,14 +48,20 @@ export function BibleSelect({ groupId, bookId, chapterId }: BibleSelectProps) {
 
   return (
     <div>
-      <div className="mb-[16px] text-[17px] font-bold text-[#75B2DA]">
-        <button onClick={handleClickBookBreadCrumb}>
+      <div className="mb-[16px] text-[17px] font-bold text-[#75B2DA] select-none">
+        <button
+          onClick={handleClickBookBreadCrumb}
+          className="hover:text-[#4A90E2]"
+        >
           {selectedBook?.book_name && <span>{selectedBook?.book_name}</span>}
         </button>
         {selectedChapter?.chapter_number && (
           <span>
             {` > `}
-            <button onClick={handleClickChapterBreadCrumb}>
+            <button
+              onClick={handleClickChapterBreadCrumb}
+              className="hover:text-[#4A90E2]"
+            >
               {selectedChapter?.chapter_number}장
             </button>
           </span>
