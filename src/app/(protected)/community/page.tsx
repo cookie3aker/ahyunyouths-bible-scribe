@@ -1,9 +1,35 @@
-import Link from "next/link";
-import { Post } from "./_components/Post";
-import { api } from "~/trpc/server";
+"use client";
 
-export default async function CommunityPage() {
-  const posts = await api.post.getAllPosts();
+import Link from "next/link";
+import { LoaderIcon } from "lucide-react";
+
+import { Post } from "./_components/Post";
+import { useInView } from "react-intersection-observer";
+import { useEffect } from "react";
+import { api } from "~/trpc/react";
+
+export default function CommunityPage() {
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    api.post.getPostsInfinite.useInfiniteQuery(
+      {
+        limit: 10,
+      },
+      {
+        getNextPageParam: (lastPage) => lastPage?.nextCursor,
+      },
+    );
+
+  const { ref, inView } = useInView();
+
+  useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      void fetchNextPage();
+    }
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  const posts = data?.pages?.flatMap((page) => page?.posts ?? []) ?? [];
+
+  console.log(posts);
 
   return (
     <main className="flex-grow px-[20px] pt-[36px] pb-[130px]">
@@ -26,7 +52,7 @@ export default async function CommunityPage() {
         </div>
 
         <div className="flex w-full flex-col items-center justify-center gap-4">
-          {posts?.map((it) => (
+          {posts.map((it) => (
             <Post
               key={it.id}
               id={it.id}
@@ -37,10 +63,14 @@ export default async function CommunityPage() {
               verseNumber={it.verse.verse_number}
               likes={it.likes}
               hasLiked={it.hasLiked}
-              // createdAt={it.createdAt.toISOString()}
-              // updatedAt={it.updatedAt.toISOString()}
             />
           ))}
+          {posts.length > 0 && <div ref={ref} style={{ height: 32 }} />}
+          {isFetchingNextPage && (
+            <div>
+              <LoaderIcon className="animate-spin text-gray-200" />
+            </div>
+          )}
         </div>
       </div>
     </main>

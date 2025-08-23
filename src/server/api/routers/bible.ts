@@ -305,6 +305,40 @@ export const bibleRouter = createTRPCRouter({
     return countByGroup;
   }),
 
+  // 모든 챕터/벌스가 필사된 book_id 리스트 반환
+  getScribeCompletedBooks: protectedProcedure.query(async ({ ctx }) => {
+    // 1. 각 책의 모든 챕터/벌스 조합 개수 집계
+    const bookVerseCounts = await ctx.db
+      .select({
+        book_id: sql<number>`c.book_id`,
+        total: sql<number>`COUNT(v.verse_id)`,
+      })
+      .from(sql`bible_chapter c`)
+      .leftJoin(sql`bible_verse v`, sql`c.chapter_id = v.chapter_id`)
+      .groupBy(sql`c.book_id`);
+
+    // 2. bible_scribe에 저장된 챕터/벌스 조합 개수 집계
+    const scribeVerseCounts = await ctx.db
+      .select({
+        book_id: sql<number>`book_id`,
+        count: sql<number>`COUNT(*)`,
+      })
+      .from(sql`bible_scribe`)
+      .groupBy(sql`book_id`);
+
+    // 3. 모두 일치하는 book_id만 반환
+    const completedBookIds = bookVerseCounts
+      .filter((book) => {
+        const scribe = scribeVerseCounts.find(
+          (s) => s.book_id === book.book_id,
+        );
+        return scribe && scribe.count === book.total;
+      })
+      .map((book) => book.book_id);
+
+    return completedBookIds;
+  }),
+
   // chapter_id로 해당 챕터의 모든 verse_id 리스트 반환
   getVerseIdsByChapterId: protectedProcedure
     .input(

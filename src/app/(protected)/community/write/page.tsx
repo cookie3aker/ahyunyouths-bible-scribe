@@ -13,6 +13,7 @@ export default function WritePage() {
     null,
   );
 
+  const utils = api.useUtils();
   const { mutateAsync: createPost, isSuccess } = api.post.create.useMutation();
 
   const handleTextAreaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
@@ -44,6 +45,7 @@ export default function WritePage() {
         chapterId: selectedBible.chapterId,
         verseId: selectedBible.verseId,
       });
+      await utils.post.getPostsInfinite.invalidate();
     } catch (error) {
       console.error("Failed to create post:", error);
     }
