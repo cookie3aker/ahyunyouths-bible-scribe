@@ -99,12 +99,13 @@ export default function WritePage() {
 
           <div className="relative mb-[36px]">
             <textarea
+              onChange={handleTextAreaChange}
               rows={1}
               value={content}
               maxLength={500}
-              className="h-auto min-h-[120px] w-full -translate-y-[30px] resize-none rounded-[20px] bg-[#FFFFFF] px-[24px] py-[30px] outline-none"
-              onChange={handleTextAreaChange}
+              spellCheck={false}
               placeholder="너의 은혜를 나눠줘!"
+              className="h-auto min-h-[120px] w-full -translate-y-[30px] resize-none rounded-[20px] bg-[#FFFFFF] px-[24px] py-[30px] outline-none"
             />
             <div className="absolute right-1 bottom-2 text-sm text-[15px] font-bold">
               {content.length}/500
