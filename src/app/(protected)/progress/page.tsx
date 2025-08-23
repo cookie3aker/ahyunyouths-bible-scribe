@@ -12,10 +12,32 @@ export default async function ProgressPage() {
    */
   const scribeCountByGroup = await api.bible.getScribeCountByGroup();
 
+    // ✅ 콘솔에 데이터 확인
+  console.log("📌 scribeCountByGroup:", scribeCountByGroup);
+
+  const { totalCount, totalGoal } = Object.values(scribeCountByGroup).reduce(
+    (acc, { count, total }) => {
+      acc.totalCount += count;
+      acc.totalGoal += total;
+      return acc;
+    },
+    { totalCount: 0, totalGoal: 0 }
+  );
+
+  const totalProgress = totalGoal > 0 ? Math.round((totalCount / totalGoal) * 100) : 0;
+
   return (
     <HydrateClient>
       <main className="flex-grow rounded-t-[24px] bg-[url('/bg-ivory.jpg')] bg-cover bg-center px-[20px] pt-[36px] pb-[130px]">
         <div className="container flex flex-col items-center justify-center gap-12">
+          <div className="w-full">
+            <h2 className="mb-[20px] text-[14px] font-bold">우리의 필사 완성도</h2>
+            {/* 공동체 전체 필사 진행률 */}
+            <p className="mb-4">
+              <span className="text-[24px] font-bold">{totalCount}권</span>{" "}
+              <span className="text-[18px] text-gray-600">({totalProgress}%)</span>
+            </p>
+          </div>
           <div className="w-full">
             <h2 className="mb-[20px] text-[14px] font-bold">소그룹별 필사</h2>
             <div className="flex w-full flex-col gap-4">
