@@ -1,6 +1,6 @@
 import { api, HydrateClient } from "~/trpc/server";
 import { Progress } from "./_components/progress";
-import BookFillMask from "./_components/BookFillMask";
+import Image from "next/image";
 
 export default async function ProgressPage() {
   const groups = await api.group.getGroups();
@@ -14,10 +14,6 @@ export default async function ProgressPage() {
   const scribeCountByGroup = await api.bible.getScribeCountByGroup();
   const completedBooks = await api.bible.getScribeCompletedBooks();
 
-    // ✅ 콘솔에 데이터 확인
-  console.log("📌 scribeCountByGroup:", scribeCountByGroup);
-  console.log("📌 completedBooks:", completedBooks);
-
   const { totalCount, totalGoal } = Object.values(scribeCountByGroup).reduce(
     (acc, { count, total }) => {
       acc.totalCount += count;
@@ -28,6 +24,8 @@ export default async function ProgressPage() {
   );
 
   const totalProgress = totalGoal > 0 ? Math.round((totalCount / totalGoal) * 100) : 0;
+  const imageStep = Math.floor(totalProgress / 10) * 10;
+  const progressImgSrc = `/book/${imageStep}p.svg`;
 
   return (
     <HydrateClient>
@@ -42,9 +40,18 @@ export default async function ProgressPage() {
               <span className="text-[18px] text-gray-600">({totalProgress}%)</span>
             </p>
 
-            {/* ▶️ 마스크 방식 진행도 */}
-            <div className="mb-3">
-              <BookFillMask progress={totalProgress} width={180} />
+            {/* 진행도 이미지 (구간 매핑) */}
+            <div className="mb-3 flex justify-center">
+              <div className="relative w-full max-w-[300px] aspect-[300/212]">
+                <Image
+                  src={progressImgSrc}
+                  alt={`progress ${totalProgress}%`}
+                  fill
+                  sizes="(max-width: 768px) 80vw, 300px"
+                  style={{ objectFit: "contain" }}
+                  priority
+                />
+              </div>
             </div>
 
           </div>
