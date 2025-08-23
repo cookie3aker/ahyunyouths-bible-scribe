@@ -30,7 +30,8 @@ export function Post({
   const [likeCount, setLikeCount] = useState(likes);
   const [hasLikedState, setHasLikedState] = useState(hasLiked);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [shouldShowToggle, setShouldShowToggle] = useState(false);
+  const [shouldShowToggle, setShouldShowToggle] = useState(true); // 기본값을 true로 설정
+  const [isCalculated, setIsCalculated] = useState(false);
 
   const contentRef = useRef<HTMLParagraphElement>(null);
   const hiddenRef = useRef<HTMLParagraphElement>(null);
@@ -57,6 +58,7 @@ export function Post({
       const elementHeight = hiddenRef.current.scrollHeight;
       const actualLines = Math.ceil(elementHeight / lineHeight);
       setShouldShowToggle(actualLines > 4);
+      setIsCalculated(true);
     }
   }, [content]);
 
@@ -67,8 +69,9 @@ export function Post({
       {/* 숨겨진 측정용 요소 */}
       <p
         ref={hiddenRef}
-        className="invisible absolute text-[15px] font-bold whitespace-pre-wrap"
-        style={{ width: "calc(100% - 40px)" }}
+        className="pointer-events-none invisible absolute text-[15px] font-bold whitespace-pre-wrap"
+        style={{ width: "calc(100% - 40px)", top: 0, left: 20 }}
+        aria-hidden="true"
       >
         {content}
       </p>
@@ -84,13 +87,20 @@ export function Post({
           ref={contentRef}
           className="flex-1 text-[15px] font-bold whitespace-pre-wrap"
           style={{
-            ...(!isExpanded &&
-              shouldShowToggle && {
-                display: "-webkit-box",
-                WebkitLineClamp: 4,
-                WebkitBoxOrient: "vertical" as const,
-                overflow: "hidden",
-              }),
+            // 기본적으로 4줄로 제한하고, 펼침 상태이거나 버튼이 필요없는 경우에만 해제
+            display:
+              isExpanded || (isCalculated && !shouldShowToggle)
+                ? "block"
+                : "-webkit-box",
+            WebkitLineClamp:
+              isExpanded || (isCalculated && !shouldShowToggle) ? "unset" : 4,
+            WebkitBoxOrient: "vertical" as const,
+            overflow:
+              isExpanded || (isCalculated && !shouldShowToggle)
+                ? "visible"
+                : "hidden",
+            opacity: isCalculated ? 1 : 0.8, // 계산 중일 때 약간 흐리게
+            transition: "opacity 0.1s ease-in-out",
           }}
         >
           {displayContent}
@@ -109,7 +119,7 @@ export function Post({
         </button>
 
         {/* 펼치기/접기 */}
-        {shouldShowToggle && (
+        {shouldShowToggle && isCalculated && (
           <button onClick={toggleExpanded} className="pt-[4px]">
             <svg
               width="18"
