@@ -11,6 +11,7 @@ export default async function ProgressPage() {
    * - 해당 집계 데이터는 Supabase cron job에서 5분 단위로 업데이트된다.
    */
   const scribeCountByGroup = await api.bible.getScribeCountByGroup();
+  const completedBooks = await api.bible.getScribeCompletedBooks();
 
   return (
     <HydrateClient>
