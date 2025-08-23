@@ -17,7 +17,7 @@ export default async function ProgressPage() {
       <main className="flex-grow rounded-t-[24px] bg-[url('/bg-ivory.jpg')] bg-cover bg-center px-[20px] pt-[36px] pb-[130px]">
         <div className="container flex flex-col items-center justify-center gap-12">
           <div className="w-full">
-            <h2 className="mb-[24px]">소그룹별 필사</h2>
+            <h2 className="mb-[20px] text-[14px] font-bold">소그룹별 필사</h2>
             <div className="flex w-full flex-col gap-4">
               {groups.map((group, index) => (
                 <Progress
