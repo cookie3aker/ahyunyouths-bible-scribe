@@ -41,13 +41,21 @@ export default async function ProgressPage() {
             </p>
 
             {/* 진행도 이미지 (구간 매핑) */}
-            <div className="mb-3 flex justify-center">
-              <div className="relative w-full max-w-[300px] aspect-[300/212]">
+            <div className="mb-3">
+              <div
+                className="
+                  relative mx-auto w-full
+                  max-w-[260px]
+                  sm:max-w-[320px]
+                  md:max-w-[500px]
+                  aspect-[300/212]
+                "
+              >
                 <Image
                   src={progressImgSrc}
                   alt={`progress ${totalProgress}%`}
                   fill
-                  sizes="(max-width: 768px) 80vw, 300px"
+                  sizes="(max-width: 640px) 80vw, (max-width: 768px) 60vw, 500px"
                   style={{ objectFit: "contain" }}
                   priority
                 />
