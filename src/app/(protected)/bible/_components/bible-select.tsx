@@ -62,7 +62,8 @@ export function BibleSelect({ groupId, bookId, chapterId }: BibleSelectProps) {
               onClick={handleClickChapterBreadCrumb}
               className="hover:text-[#4A90E2]"
             >
-              {selectedChapter?.chapter_number}장
+              {selectedChapter?.chapter_number}
+              {selectedBook?.book_id === 32 ? "편" : "장"}
             </button>
           </span>
         )}
@@ -121,7 +122,8 @@ export function BibleSelect({ groupId, bookId, chapterId }: BibleSelectProps) {
                   : "bg-[#FFFBF7]"
               } p-2 text-[14px] text-[#302C27] shadow`}
             >
-              {chapter.chapter_number}장
+              {chapter.chapter_number}
+              {selectedBook?.book_id === 32 ? "편" : "장"}
             </button>
           ))}
         </div>
